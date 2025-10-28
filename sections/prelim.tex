@@ -1,0 +1,93 @@
+\section{Preliminaries}
+
+\paragraph{Notation.}
+We use $\lambda \in \mathbb{Z}$ to denote the security parameter.
+We use $x \gets y$ to denote the assignment of the value of $y$ to $x$,
+and write $x \rgets S$ to denote sampling an element from the set $S$ independently and uniformly at random.
+For a randomized algorithm $\adv$ we write $y \rgets \adv(x)$ to denote the random variable
+that is the output of $\adv(x)$ on input $x$.
+%
+We use $\set{n}$ for the set $\{1,\ldots,n\}$.
+%
+For a positive integer $q$ we use $\Zq$ to denote the ring $\Z/q\Z$.
+
+When writing protocols,
+$\require~\cdot$ denotes the clause that if some predicate~$\cdot$ does not hold,
+then the respective party must abort the protocol.
+
+
+\subsection{Communication Model}
+\label{sec:comm-model}
+
+When describing distributed key generation schemes,
+we assume each pair of parties can communicate over a secure channel.
+We introduce below two types of secure channels that we rely upon for our DKG construction.
+
+
+We also assume a synchronous model of communication;
+which means we require that protocol execution progresses in well-defined rounds, with every message sent in a given round being delivered before the start of the subsequent round.
+We assume that the adversary can be rushing, meaning that in any given Round~$r$ the corrupted parties can receive all messages sent by the honest parties in Round~$r$ before the corrupted parties are required to send their Round-$r$ messages.
+
+\paragraph{Broadcast Channels}
+A broadcast channel sends one message to all other players,
+with the guarantee that all players received the same message.
+A broadcast channel guarantees the properties of authenticity, reliability, and consistency.
+We denote sending over a broadcast channel with $\sendbroadcast$. Note that on the MPC level,
+these channels are equipped with timeouts.
+
+Concretely,
+we instantiate $\sendbroadcast$ with the ``Authenticated Double-Echo Broadcast'' protocol
+from~\cite{CGR11} in order to achieve Byzantine reliable broadcast. A reliable broadcast
+channel specifically guarantees the properties of Validity, No duplication, Integrity
+and totality (see Module 3.11 and Module 3.12 of~\cite{CGR11}).
+The file \textit{echo\_broadcast.rs} contains the implementation of the reliable broadcast protocol.
+We essentially follow the same algorithm 3.18 of~\cite{CGR11} with three mild differences:
+\begin{enumerate}
+\item If a party is broadcasting a value, then the protocol expects that other parties would also want to broadcast some values. This is essentially equivalent to running $n$ parallel instances of algorithm 3.18 where one instance where party $k$ is a sender and $n-1$ instances where $k$ is a receiver. Such an implementation serves directly our use cases in protocols where symmetry holds between participants. Additionally, this implementation prevents having deadlocks (two parties waiting for each others to send values on two different broadcast channels) and prevents having inefficient sequential broadcast instances.
+\item If an (honest) broadcast sender recovers an output at the end of the protocol that is different than
+the value it input, then it aborts considering that the effective number of malicious parties is larger than what the
+protocol allows.
+\item If a party collects a number of votes and deduces that there is no way to meet the necessary threshold for any of
+the collected votes, then it immediately aborts instead of waiting for timeouts to abort the process.
+\end{enumerate}
+
+\subsection{Distributed Key Generation}
+
+We follow the definition and idealized notion of security $\FDKGAbort$
+for a distributed key generation (DKG) protocol where the adversary is allowed to bias the output key with some (constrained) additive  shift $\Delta$,
+as presented by Katz~\cite{Katz23}.
+We give a stand-alone definition of security for $\FDKGAbort$.
+Because our proof for $\pedpopcomm$ uses only online straight-line simulation,
+our proof with respect to $\FDKGAbort$ in the standalone setting is also by extension secure in the Universal Composability (UC) framework~\cite{KushilevitzLR10}.
+We assume an adversary that performs only static corruptions.
+
+
+\begin{figure}[t]
+  \begin{framed}
+    \begin{center}
+      $\FDKGAbort$
+      \begin{enumerate}
+        \item Let $n, t$ be parameters provided to $\FDKGAbort$.
+        \item Send $(n, t)$ to the adversary $\adv$; receive $\corrupt$ from $\adv$.
+        \item Choose $\secret \rgets \Zq$ and compute
+        $\secretComm \gets g^{\secret}$.
+        \item Send $\secretComm$ to the adversary $\adv$;
+          receive $(\abort, (\SK_j)_{j \in \corrupt})$ in return.
+        \item If $\abort = 1$, send $\bot$ to all parties.
+        \item Otherwise, let $f$ be the polynomial of degree $t$
+          such that $f(0) = \secret$ and $f(j) = \SK_j$,
+          for $j \in \corrupt$.
+        \item Set $\PK = g^\secret$.
+        \item Set $\SK_i = f(i)$, for $i \in \honest$.
+        \item For $i \in \set{n}$, set $\PK_i = g^{\SK_i}$.
+        \item Send $(\PK, \{ \PK_i \}_{i \in \set{n}}, \SK_i)$ to each party $i \in \set{n}$;
+          send $(\PK, \{ \PK_i \}_{i \in \set{n}})$ to the adversary.
+      \end{enumerate}
+    \end{center}
+  \end{framed}
+    \caption{Ideal functionality for key generation allowing adversarial abort,
+    as defined by Katz~\cite{Katz23}.
+    }
+  \label{fg:keygen-abort}
+\end{figure}
+
