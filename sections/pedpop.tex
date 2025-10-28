@@ -1,0 +1,59 @@
+\section{PedPop}
+
+In the rest of this document, we denote by $k$ the identifier of the participant running the protocol, by $t$ the signing threshold of the participants, and by
+$n$ the total number of participants. We assume, w.l.o.g.\@ that the participants' identifiers range from $1$ to $n$ and that no two participants have the same identifier. We also assume that the parameters provided to the scheme are coherent, that is, they validate some intuitive set of rules such as \@ $n>2$, $k \in \set{n}$ and $t\leq n$.
+
+We depict $\pedpop$ in Figure~\ref{fig:pedpop} and refer the reader to~\cite{EPRINT:KomGol20} for proof details.
+In a nutshell, the protocol runs in two rounds.
+In the first round, the secret coefficients are picked at random and committed to then broadcast along with a Schnorr signature acting as a proof of knowledge of the secret key share associated to the verification key share.
+In the second round, the polynomial created using the secret coefficients is evaluated on the participant identifiers.
+Each evaluation is shared privately with the corresponding peer participant.
+Finally, after receiving the evaluations, a sequence of checks is performed to ensure the validity of the signatures, commitments, and polynomial evaluations received.
+The master verification key, verification key shares, and private verification key are all computed and returned by the protocol.
+
+\begin{figure}[!ht]
+\centering
+\begin{pchstack}[boxed,center,space=1em]
+\begin{pcvstack}
+\procedure{$\KeyGen_1(k, t, n)$}{
+(\alpha, a_1, \ldots, a_t) \rgets \Zq^t \\
+\text{\algcom local party has index k}\\
+A_0 \gets g^{\alpha} \\
+\pcfor i \in \set{t} \pcdo \\
+\quad A_i \gets g^{a_i} \\
+C_k \gets (A_0, \ldots, A_t) \\
+\pcfor j \in \set{n} \pcdo \\
+\quad f(j) \gets \alpha + \sum_{i=1}^t a_i j^i \\
+\pi_k \rgets \schnorr[\Hash_1].\Sign(\alpha, \Phi)\\
+%\state_k \gets (\{ (i, f(i))\}_{i \in \set{n}} ) \\
+\sendbroadcast((C_k, \pi_k )) \\
+%\pcreturn \state_k
+% \pcreturn  ((C_k, \pi_k ), \{ f(i) \}_{i \in \set{n}}, \state_k)
+}
+\pcvspace
+\procedure{$\KeyGen_2$}{
+\pcfor i \in \set{n} \pcdo \\
+\quad \send(i, f(i))
+}
+\end{pcvstack}
+\begin{pcvstack}
+\procedure{$\KeyGen_3(\{ f_i(k), (C_i, \pi_i) \}_{i \in \set{n}})$}{
+\pcfor i \in \set{n}, i \neq k \pcdo \\
+  \text{\algcom Check proof of knowledge of $\sk$} \\
+  \quad \require \schnorr[\Hash_1].\Verify(C_i[0], \Phi) \neq 1 \\
+  \text{\algcom Check correctness of share} \\
+  \quad \require g^{f_i(k)} \neq \prod_{j=0}^t C_i[j]^{k^j} \\
+  \pcfor i \in \set{n} \pcdo \\
+  \text{\algcom Derive each participant's public key share}  \\
+  \quad \pk_i \gets \prod_{j=1}^n \prod_{\ell=0}^{t-1} C_j[\ell]^{i^\ell}\\
+  \sk_k \gets \sum_{i=1}^n f_i(k) \\
+  \pk \gets \prod_{i=1}^n C_i[0]\\
+  \pcreturn (\pk, \{ \pk_i\}_{i=1}^n, \sk_k )
+}
+\end{pcvstack}
+\end{pchstack}
+\caption{The two-round PedPop DKG. The public parameters $\pp$ are given as input to all algorithms and protocols. $\schnorr$ is the single-party Schnorr signature scheme.
+$\Phi$ is a context string that aims to prevent replay attacks. It contains the identifier of the signer, the verification key share
+}
+\label{fig:pedpop}
+\end{figure}
