@@ -1,10 +1,14 @@
 \section{$\pedpopcomm$}
 
+\chelsea{TODO give domains and co-domains of hash functions, and update proof
+to match}
+
 $\pedpopcomm$ is a modification of $\pedpop$ in which three extra rounds of communications are added.
 This protocol could either be used as a DKG or as a Key Resharing scheme.
 We depict the protocol in Figure~\ref{fig:pedpopplus} and Figure~\ref{fig:pedpopplus-reshare}.
 
-We require an online-extractable non-interactive zero-knowledge proof (NIZK).
+We require an online-extractable non-interactive zero-knowledge proof (NIZK)
+$\NIZKUCR$ for the Schnorr relation.
 The relation that we must prove is simply the Schnorr relation;
 that the prover knows the discrete logarithm to the commitment.
 Figure~\ref{fig:pedpopplus} simply refers to this relation as $\SchnorrR$;
@@ -67,7 +71,7 @@ A_0 \gets g^{\alpha} \\
 C_k \gets (A_0, \ldots, A_t)\\
 H_k \gets \Hash_2(k, C_k, \sid) \\
 \gamma_k \gets (\sid, k, C_k[0]) \\
-\pi_k \rgets \SchnorrR[\Hash_3].\Sign(\alpha, \gamma_k) \\
+\pi_k \rgets \NIZKUCR[\Hash_3].\Sign(\alpha, \gamma_k) \\
 \pcfor i \in \set{n}\\
 \quad \send(i, H_k) \\
 }
@@ -81,7 +85,7 @@ H_k \gets \Hash_2(k, C_k, \sid) \\
 \quad f_k(j) \gets \alpha + \sum_{i=1}^t a_i j^i \\
 \pcfor i \in \set{n}, i \neq k \\
 \quad \gamma_i \gets (\sid, k, C_i[0]) \\
-\quad \require \SchnorrR[\Hash_3].\Verify(C_i[0], \gamma_i, \pi_i) \\
+\quad \require \NIZKUCR[\Hash_3].\Verify(C_i[0], \gamma_i, \pi_i) \\
 \quad \require \Hash_2(\sid, i, C_i) = H_i\\
 \quad \send(i, f_k(i)) \\
 }
