@@ -55,14 +55,16 @@ and realizes the idealized notion $\FDKGAbort$.
     \medskip
 
     \paragraph{\bf Round 2.}
-    On input $\{H_i \}_{i \in \set{n}}$,
-    To simulate Round~1 of the DKG,
+    On input \chelsea{TODO},
+    to simulate Round~1 of the DKG,
     $\SIM$ does the following:
     \begin{itemize}
       \item For each corrupt party $j \in \corrupt$,
       look up $(\sid, j, C_j[0]) \gets \QSchnorrR[H_j]$.
-      \item If any $H_j$ does not correspond to a valid entry,
-      follow the remainder of Round~2 honestly for all honest participants.
+      \item If any $H_j$ does not correspond to a valid entry or to the current $\sim$,
+      follow the remainder of Round~2 honestly for all honest participants
+        (there is no need to simulate as honest parties will abort in a later
+        round due to invalid validity checks).
       \item Otherwise, for all honest parties $i \in \honest, i \neq \simid$,
       follow Round~2 as defined in the protocol.
       \item However, for party $\simid$,
@@ -81,9 +83,22 @@ C[0]_{\simid} \gets \dkgchal \cdot
           (of $x$-coordinates) $\{ 0\cup\corrupt \}$,
           as defined in Section~\ref{prelim:secret-sharing}.
         \item For $\ell \in \{ 1, \ldots, \tcor\}$, set the remaining commitments, as follows:
-          \[ C[\ell]_{\simid} \gets C[0]_{\simid}^{L'_0(\ell)} \cdot
+          \[ C_\simid[\ell] \gets C_\simid[0]^{L'_0(\ell)} \cdot
             \prod_{j \in \corrupt \cup \{ 0\}} (g^{\share_{\simid,j}})^{L'_j(\ell)} \]
+        \item Generate a simulated zero-knowledge proof $\pi_\simid$ of $\SchnorrR$ for $C[0]_\simid$.
+            \chelsea{TODO describe how}
+        \item Output $\{ (C_k, \pi_k)\}_{k \in \honest}$.
       \end{enumerate}
+    \end{itemize}
+
+    \paragraph{\bf Round 3.}
+    On input \chelsea{TODO}
+    to simulate Round~1 of the DKG,
+    $\SIM$ does the following:
+    \begin{itemize}
+      \item Perform verification steps honestly;
+        if any verification step fails, abort the protocol.
+      \item Otherwise,
     \end{itemize}
 
 \end{proof}
