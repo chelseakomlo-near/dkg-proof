@@ -29,6 +29,11 @@ and realizes the idealized notion $\FDKGAbort$.
 
     \medskip
 
+    \paragraph{\bf Simulating Random Oracle Queries.}
+    \chelsea{TODO}
+
+    \medskip
+
     \paragraph{\bf Round 0.}
     To simulate the initial round of the DKG,
     $\SIM$ follows the protocol honestly for each party $i \in \honest$.
@@ -61,7 +66,24 @@ and realizes the idealized notion $\FDKGAbort$.
       \item Otherwise, for all honest parties $i \in \honest, i \neq \simid$,
       follow Round~2 as defined in the protocol.
       \item However, for party $\simid$,
-      do as follows:
+        do as follows:
+        \begin{enumerate}
+    \item Randomly sample corrupt parties' shares $\share_{\simid,j} \rgets \Zq$ for all $j \in \corrupt$.
+    \item Set
+          \begin{equation}
+            \label{eq:simid-comm}
+C[0]_{\simid} \gets \dkgchal \cdot
+              \prod_{k \in \honest, k  \neq \simid} (C[0]_{k})^{-1} \cdot
+              \prod_{j \in \corrupt} (C[0]_{j})^{-1}
+          \end{equation}
+          where $C[0]_{k}$ are from the honest parties $k \in \honest, k \neq \simid$ polynomial commitments $C$.
+			  \item Compute the Lagrange polynomials $\{L'_0(Z), \{L'_{j}(Z)\}_{j \in \corrupt}\}$ for the set
+          (of $x$-coordinates) $\{ 0\cup\corrupt \}$,
+          as defined in Section~\ref{prelim:secret-sharing}.
+        \item For $\ell \in \{ 1, \ldots, \tcor\}$, set the remaining commitments, as follows:
+          \[ C[\ell]_{\simid} \gets C[0]_{\simid}^{L'_0(\ell)} \cdot
+            \prod_{j \in \corrupt \cup \{ 0\}} (g^{\share_{\simid,j}})^{L'_j(\ell)} \]
+      \end{enumerate}
     \end{itemize}
 
 \end{proof}
