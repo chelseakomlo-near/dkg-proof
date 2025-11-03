@@ -5,7 +5,8 @@ to match}
 
 $\pedpopcomm$ is a modification of $\pedpop$ in which three extra rounds of communications are added.
 This protocol could either be used as a DKG or as a Key Resharing scheme.
-We depict the protocol in Figure~\ref{fig:pedpopplus} and Figure~\ref{fig:pedpopplus-reshare}.
+We depict the key generation protocol in Figure~\ref{fig:pedpopplus} and
+key resharing in Figure~\ref{fig:pedpopplus-reshare}.
 
 We require an online-extractable non-interactive zero-knowledge proof (NIZK)
 $\NIZKUCR$ for the Schnorr relation.
@@ -108,4 +109,72 @@ H_k \gets \Hash_2(k, C_k, \sid) \\
 \caption{The five-round DKG $\pedpopcomm$.
 See Section~\ref{sec:comm-model} for definitions of $\send$ and $\sendbroadcast$.}
 \label{fig:pedpopplus}
+\end{figure}
+
+
+\begin{figure}[!ht]
+\centering
+\begin{pchstack}[boxed,center,space=1em]
+\begin{pcvstack}
+\procedure{$\KeyGen_0(k, t, n,\fbox{$\oldsk_k, \oldpk, \oldsigners, \oldt$})$}{
+\require n > 2\\
+\require k\in \set{n}\\
+\require t\leq n\\
+\fbox{$I \gets \set{n} \cap \oldsigners$}\\
+\fbox{$\require \oldt \leq \left\lvert I\right\lvert$}\\
+\sid_i \rgets \zo^\lambda \\
+\sendbroadcast(\sid_i) \\
+}
+\procedure{$\KeyGen_1(\sid_1, \ldots, \sid_n)$}{
+\sid \gets \Hash_1(\sid_1, \ldots, \sid_n) \\
+\fbox{$(a_1, \ldots, a_t) \rgets \Zq^{t-1} $} \\
+\fbox{$\pcif k \notin \oldsigners$ } \\
+\quad \fbox{$\alpha \gets 0$} \\
+\fbox{$\pcelse$} \\
+\quad \fbox{ $\alpha \gets \linearize_k(\oldsk_k, I)$}\\
+A_0 \gets g^{\alpha} \\
+\pcfor i \in \set{t} \\
+\quad A_i \gets g^{a_i} \\
+C_k \gets (A_0, \ldots, A_t)\\
+H_k \gets \Hash_2(k, C_k, \sid) \\
+\gamma_k \gets (\sid, k, C_k[0]) \\
+\pi_k \rgets \schnorr[\Hash_3].\Sign(\alpha, \gamma_k) \\
+\pcfor i \in \set{n}\\
+\quad \send(i, H_k) \\
+}
+\procedure{$\KeyGen_2(\{H_i\}_{i\in\set{n}})$}{
+\sendbroadcast(C_k, \pi_k) \\
+}
+\end{pcvstack}
+\begin{pcvstack}
+\procedure{$\KeyGen_3(\{C_i, \pi_i\}_{i\in\set{n}})$}{
+\pcfor j \in \set{n} \\
+\quad f_k(j) \gets \alpha + \sum_{i=1}^t a_i j^i \\
+\pcfor i \in \set{n}, i \neq k \\
+\quad \gamma_i \gets (\sid, k, C_i[0]) \\
+\quad \require \schnorr[\Hash_3].\Verify(C_i[0], \gamma_i, \pi_i) \\
+\quad \require \Hash_2(\sid, i, C_i) = H_i\\
+\quad \send(i, f_k(i)) \\
+}
+\procedure{$\KeyGen_4(\{f_i(k)\}_{i\in\set{n}})$}{
+\pcfor i \in \set{n}, i \neq k \\
+\quad \require g^{f_i(k)} = \prod_{j=0}^t C_i[j]^{k^j} \\
+% \pcfor i \in \set{n} \\
+% \quad \pk_i \gets \prod_{j=1}^n \prod_{\ell=0}^{t-1} C_j[\ell]^{i^\ell}  \\
+\sk_k \gets \sum_{i=1}^n f_i(k) \\
+\pk \gets \prod_{i=1}^n C_i[0] \\
+\fbox{$\require \pk = \oldpk$} \\
+\sendbroadcast(\text{``success'', $\sid$})\\
+}
+\procedure{$\KeyGen_5(\{s_i\}_{i\in\set{n}})$}{
+\pcfor i \in \set{n}, i \neq k \\
+\quad \require s_i = \text{(``success'', $\sid$)} \\
+\pcreturn (\pk, \sk_k) \\
+}
+\end{pcvstack}
+\end{pchstack}
+\caption{The five-round Resharing Scheme Based on $\pedpopcomm$.
+Differences with the DKG protocol $\pedpopcomm$ are highlighted in a box.
+See Section~\ref{sec:comm-model} for definitions of $\send$ and $\sendbroadcast$.}
+\label{fig:pedpopplus-reshare}
 \end{figure}

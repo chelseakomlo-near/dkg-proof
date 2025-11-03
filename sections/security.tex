@@ -42,7 +42,8 @@ and realizes the idealized notion $\FDKGAbort$.
     \medskip
 
     \paragraph{\bf Round 1.}
-    To simulate Round~1 of the DKG,
+    On input $\sid_1, \ldots, \sid_n$,
+    to simulate Round~1 of the DKG,
     $\SIM$ does the following:
     \begin{itemize}
     \item Derive $\sid$ honestly.
@@ -55,8 +56,8 @@ and realizes the idealized notion $\FDKGAbort$.
     \medskip
 
     \paragraph{\bf Round 2.}
-    On input \chelsea{TODO},
-    to simulate Round~1 of the DKG,
+    On input $(\{H_i\}_{i\in\set{n}})$,
+    to simulate Round~2 of the DKG,
     $\SIM$ does the following:
     \begin{itemize}
       \item For each corrupt party $j \in \corrupt$,
@@ -92,13 +93,26 @@ C[0]_{\simid} \gets \dkgchal \cdot
     \end{itemize}
 
     \paragraph{\bf Round 3.}
-    On input \chelsea{TODO}
-    to simulate Round~1 of the DKG,
+    On input $\KeyGen_3(\{C_i, \pi_i\}_{i\in\set{n}})$,
+    to simulate Round~3 of the DKG,
     $\SIM$ does the following:
     \begin{itemize}
       \item Perform verification steps honestly;
         if any verification step fails, abort the protocol.
       \item Otherwise,
     \end{itemize}
+
+    \medskip
+
+    \paragraph{\bf Round 4.}
+    On input $(\{f_i(k)\}_{i\in\set{n}})$,
+    to simulate Round~4 of the DKG,
+    $\SIM$ does the following:
+    \begin{itemize}
+      \item TODO
+    \end{itemize}
+
+    \paragraph{\bf Round 5.}
+    On input $(\{s_i\}_{i\in\set{n}})$
 
 \end{proof}
