@@ -18,6 +18,19 @@ where
 
 Applying the non-interactive proof straight-line compiler given by Chen et al.~\cite{ChenDGMSS25} gives online-extractability and hence UC security.
 
+\begin{align*}
+    \begin{split}
+        \hspace{-2pt}\SchnorrRON = \Big\{ (g, h, \PK, R_1, R_2, z)\ ;\ (\sk, r) \Big\} \\
+            \text{iff} \qquad
+            (1) & g^z \iseq \PK^c \cdot R_1 \\
+            (2) & h^z \iseq \PK^c \cdot R_2 \\
+            (3) & c \iseq \HashSchnorrR(g, h, \PK, R_1, R_2)
+    \end{split}
+\end{align*}
+
+where $(g, h)$ are elements of the group $\Gr$ output by $\Setup$ such that the discrete logarithm relation is unknown.
+
+
 \subsection{Key Generation}\label{sec:key-generation}
 In Round 0, a participant performs necessary checks to  picks a random session identifier and broadcasts it.
 It then receives the broadcast session identifiers from it's peers and hashes all identifiers into one single string in Round 1.
