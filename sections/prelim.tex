@@ -15,6 +15,56 @@ When writing protocols,
 $\require$ denotes the clause that if some predicate~$\cdot$ does not hold,
 then the respective party must abort the protocol.
 
+\subsection{Polynomial Interpolation and Shamir Secret Sharing}
+\label{prelim:secret-sharing}
+
+A polynomial $f(x) = a_0 + a_1 x + a_2 x^2 + \ldots + a_{\tcor} x^{\tcor}$
+of degree $\tcor$ over a field $\F$ can be interpolated by $\thresh$ points.
+Let $\eta \subseteq \set{n}$ be the list of $\thresh$ distinct indices
+corresponding to the $x$-coordinates $x_i \in \F$ of these points.
+Then the Lagrange polynomial $L_i(x)$ has the form:
+
+\[
+  L_i(x) = \prod_{j \in \eta; j \neq i } \frac{x-x_j}{x_i - x_j}
+\]
+
+
+Given a set of $\thresh$ points $(x_i, f(x_i))_{i \in \eta}$,
+any point $f(\xtilde)$ on the polynomial $f$ can be determined by Lagrange interpolation as follows:
+\[
+  f(\xtilde) = \sum_{k \in \eta} f(x_k) \cdot L_j(\xtilde)
+\]
+
+\paragraph{Shamir Secret Sharing.}
+Shamir secret sharing~\cite{Shamir79} is an $(n, \thresh)$-threshold secret sharing scheme consisting of algorithms $(\IssueShares, \allowbreak \Recover)$, defined as follows:
+
+\begin{itemize}[itemsep=1mm]
+    \item $\IssueShares(\secret, n, \thresh) \rightarrow \{ (1, \share_1), \ldots, (n, \share_n)\}$:
+      On input a secret $\secret$, number of participants $n$, and threshold $\thresh$, perform the following.
+First, define a polynomial $f(Z) = x + a_1 Z + a_2 Z^2 + \cdots + a_{\tcor} Z^{\tcor}$ with $a_1, \ldots, a_{\tcor} \randpick \Z_p$.
+Then, set each participant's share $\share_i, i \in \set{n}$, to be the evaluation of $f(i)$:
+    \[
+        \share_i \gets \secret + \sum_{j \in \set{\tcor}} a_j i^j
+      \]
+%
+    Output $\{(i, \share_i) \}_{i \in \set{n}}$.
+
+  \item $ \Recover(\thresh, \{ (i, \share_i)\}_{ i \in \coalition}) \rightarrow \bot / \secret$:
+    On input threshold $\thresh$ and a set of shares
+$\{(i, \share) \}_{i \in \coalition}$,
+    output $\bot$ if the coalition $\coalition \not\subseteq \set{n}$ or if
+$\lvert \coalition \rvert < \thresh$.
+Otherwise, recover $\secret$ as follows:
+  \[
+      \secret \gets \sum_{i \in \coalition} \share_i \cdot L_i(0)
+  \]
+    where the Lagrange coefficient for the set
+$\coalition$ is defined by
+    \[
+    L_i(0) = \prod_{j \in \coalition, j\neq i} \frac{j}{j - i}
+    \]
+\end{itemize}
+
 
 \subsection{Communication Model}
 \label{sec:comm-model}

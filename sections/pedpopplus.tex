@@ -9,11 +9,14 @@ We depict the key generation protocol in Figure~\ref{fig:pedpopplus} and
 key resharing in Figure~\ref{fig:pedpopplus-reshare}.
 
 We require an online-extractable non-interactive zero-knowledge proof (NIZK)
-$\NIZKUCR$ for the Schnorr relation.
-The relation that we must prove is simply the Schnorr relation;
-that the prover knows the discrete logarithm to the commitment.
-Figure~\ref{fig:pedpopplus} simply refers to this relation as $\SchnorrR$;
-applying the non-interactive proof straight-line compiler given by Chen et al.~\cite{ChenDGMSS25} gives online-extractability and hence UC security.
+$\NIZKUCR$ for the Schnorr relation $\SchnorrR$,
+where
+
+\[
+  \SchnorrR = \Big\{ (g, \PK) \ ; \ (\sk) \ : \ \PK = g^\sk \Big\}
+\]
+
+Applying the non-interactive proof straight-line compiler given by Chen et al.~\cite{ChenDGMSS25} gives online-extractability and hence UC security.
 
 \subsection{Key Generation}\label{sec:key-generation}
 In Round 0, a participant performs necessary checks to  picks a random session identifier and broadcasts it.
@@ -64,15 +67,15 @@ Checking such invariant is due to the fact that honest new participants shall no
 \sendbroadcast((\sid_i)) \\
 }
 \procedure{$\KeyGen_1(\sid_1, \ldots, \sid_n)$}{
-\sid \gets \Hash_1(\sid_1, \ldots, \sid_n) \\
+\sid \gets \HashSid(\sid_1, \ldots, \sid_n) \\
 (\alpha, a_1, \ldots, a_t) \rgets \Zq^t \\
 A_0 \gets g^{\alpha} \\
 \pcfor i \in \set{t} \pcdo \\
 \quad A_i \gets g^{a_i} \\
 C_k \gets (A_0, \ldots, A_t)\\
-H_k \gets \Hash_2(k, C_k, \sid) \\
+H_k \gets \HashCom(k, C_k, \sid) \\
 \gamma_k \gets (\sid, k, C_k[0]) \\
-\pi_k \rgets \NIZKUCR[\Hash_3].\Sign(\alpha, \gamma_k) \\
+\pi_k \rgets \NIZKUCR[\HashSchnorrR].\Sign(\alpha, \gamma_k) \\
 \pcfor i \in \set{n}\\
 \quad \send(i, H_k) \\
 }
@@ -86,7 +89,7 @@ H_k \gets \Hash_2(k, C_k, \sid) \\
 \quad f_k(j) \gets \alpha + \sum_{i=1}^t a_i j^i \\
 \pcfor i \in \set{n}, i \neq k \\
 \quad \gamma_i \gets (\sid, k, C_i[0]) \\
-\quad \require \NIZKUCR[\Hash_3].\Verify(C_i[0], \gamma_i, \pi_i) \\
+\quad \require \NIZKUCR[\HashSchnorrR].\Verify(C_i[0], \gamma_i, \pi_i) \\
 \quad \require \Hash_2(\sid, i, C_i) = H_i\\
 \quad \send(i, f_k(i)) \\
 }
