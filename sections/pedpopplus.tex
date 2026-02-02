@@ -113,11 +113,11 @@ H_k \gets \HashCom(k, C_k, \sid) \\
 % \quad \pk_i \gets \prod_{j=1}^n \prod_{\ell=0}^{t-1} C_j[\ell]^{i^\ell}  \\
 \sk_k \gets \sum_{i=1}^n f_i(k) \\
 \pk \gets \prod_{i=1}^n C_i[0] \\
-\sendbroadcast(\text{``success'', $\sid$})\\
+\sendbroadcast(\success, \sid)\\
 }
-\procedure{$\KeyGen_5(\{s_i\}_{i\in\set{n}})$}{
+\procedure{$\KeyGen_5(\{(\successi, \sid_i)\}_{i\in\set{n}})$}{
 \pcfor i \in \set{n}, i \neq k \\
-\quad \require s_i = \text{(``success'', $\sid$)} \\
+\quad \require (\successi, \sid_i) = (\success, \sid) \\
 \pcreturn (\pk, \sk_k) \\
 }
 \end{pcvstack}
@@ -180,11 +180,11 @@ H_k \gets \Hash_2(k, C_k, \sid) \\
 \sk_k \gets \sum_{i=1}^n f_i(k) \\
 \pk \gets \prod_{i=1}^n C_i[0] \\
 \fbox{$\require \pk = \oldpk$} \\
-\sendbroadcast(\text{``success'', $\sid$})\\
+\sendbroadcast(\success, \sid)\\
 }
-\procedure{$\KeyGen_5(\{s_i\}_{i\in\set{n}})$}{
+\procedure{$\KeyGen_5(\{(\successi, \sid_i)\}_{i\in\set{n}})$}{
 \pcfor i \in \set{n}, i \neq k \\
-\quad \require s_i = \text{(``success'', $\sid$)} \\
+\quad \require (\success, \sid_i) = (\success, \sid) \\
 \pcreturn (\pk, \sk_k) \\
 }
 \end{pcvstack}
