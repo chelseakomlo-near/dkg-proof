@@ -121,7 +121,7 @@ We assume an adversary that performs only static corruptions.
         \item Let $n, t$ be parameters provided to $\FDKGAbort$.
         \item Send $(n, t)$ to the adversary $\adv$; receive $\corrupt$ from $\adv$.
         \item Let $f$ be a degree $t$ polynomial randomly sampled from $\Zq$.
-        \item Compute $\secretComm \gets g^{\secret}$
+        \item Compute $\secretComm \gets g^{f(0)}$
         \item Compute $(\SK_i,\PK_i) \gets (f(i), g^{f(i)})$ for all $i \in \set{n}$.
         \item Send $(\secretComm, \set{\PK_i}_{i\in\set{n}}, \set{\SK_i}_{i\in\set{\corrupt}})$ to the adversary $\adv$
         \item Receive $(\abort, p(\cdot))$ from $\adv$.
