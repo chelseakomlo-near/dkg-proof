@@ -40,7 +40,7 @@ C_k \gets (A_0, \ldots, A_t) \\
 \procedure{$\KeyGen_3(\{ f_i(k), (C_i, \pi_i) \}_{i \in \set{n}})$}{
 \pcfor i \in \set{n}, i \neq k \pcdo \\
   \text{\algcom Check proof of knowledge of $\sk$} \\
-  \quad \require \schnorr[\Hash_1].\Verify(C_i[0], \Phi) \neq 1 \\
+  \quad \require \schnorr[\Hash_1].\Verify(C_i[0], \Phi, \pi_i) \neq 1 \\
   \text{\algcom Check correctness of share} \\
   \quad \require g^{f_i(k)} \neq \prod_{j=0}^t C_i[j]^{k^j} \\
   \pcfor i \in \set{n} \pcdo \\

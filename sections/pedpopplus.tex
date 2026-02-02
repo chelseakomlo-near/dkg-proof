@@ -72,25 +72,27 @@ Checking such invariant is due to the fact that honest new participants shall no
 \centering
 \begin{pchstack}[boxed,center,space=1em]
 \begin{pcvstack}
+\red{
 \procedure{$\KeyGen_0(k, t, n)$}{
 \require n > 2\\
 \require k\in \set{n}\\
 \require t\leq n\\
 \sid_i \rgets \zo^\lambda \\
-\sendbroadcast((\sid_i)) \\
+\sendbroadcast(\sid_i) \\
+}
 }
 \procedure{$\KeyGen_1(\sid_1, \ldots, \sid_n)$}{
-\sid \gets \HashSid(\sid_1, \ldots, \sid_n) \\
+\color{red} \sid \gets \HashSid(\sid_1, \ldots, \sid_n) \\
 (\alpha, a_1, \ldots, a_t) \rgets \Zq^t \\
 A_0 \gets g^{\alpha} \\
 \pcfor i \in \set{t} \pcdo \\
 \quad A_i \gets g^{a_i} \\
 C_k \gets (A_0, \ldots, A_t)\\
-H_k \gets \HashCom(k, C_k, \sid) \\
-\gamma_k \gets (\sid, k, C_k[0]) \\
+\color{red} H_k \gets \HashCom(k, C_k, \sid) \\
+\color{red} \gamma_k \gets (\sid, k, C_k[0]) \\
 \pi_k \rgets \NIZKUCR[\HashSchnorrR].\Sign(\alpha, \gamma_k) \\
-\pcfor i \in \set{n}\\
-\quad \send(i, H_k) \\
+\color{red} \pcfor i \in \set{n}\\
+\color{red} \quad \send(i, H_k) \\
 }
 \procedure{$\KeyGen_2(\{H_i\}_{i\in\set{n}})$}{
 \sendbroadcast(C_k, \pi_k) \\
@@ -101,23 +103,24 @@ H_k \gets \HashCom(k, C_k, \sid) \\
 \pcfor j \in \set{n} \\
 \quad f_k(j) \gets \alpha + \sum_{i=1}^t a_i j^i \\
 \pcfor i \in \set{n}, i \neq k \\
-\quad \gamma_i \gets (\sid, k, C_i[0]) \\
+\color{red} \quad \gamma_i \gets (\sid, k, C_i[0]) \\
 \quad \require \NIZKUCR[\HashSchnorrR].\Verify(C_i[0], \gamma_i, \pi_i) \\
-\quad \require \Hash_2(\sid, i, C_i) = H_i\\
+\color{red} \quad \require \Hash_2(\sid, i, C_i) = H_i\\
 \quad \send(i, f_k(i)) \\
 }
 \procedure{$\KeyGen_4(\{f_i(k)\}_{i\in\set{n}})$}{
 \pcfor i \in \set{n}, i \neq k \\
 \quad \require g^{f_i(k)} = \prod_{j=0}^t C_i[j]^{k^j} \\
+\color{red} \text{(No derivation for participants public key)}\\
 % \pcfor i \in \set{n} \\
 % \quad \pk_i \gets \prod_{j=1}^n \prod_{\ell=0}^{t-1} C_j[\ell]^{i^\ell}  \\
 \sk_k \gets \sum_{i=1}^n f_i(k) \\
 \pk \gets \prod_{i=1}^n C_i[0] \\
-\sendbroadcast(\success, \sid)\\
+\color{red} \sendbroadcast(\success, \sid)\\
 }
 \procedure{$\KeyGen_5(\{(\successi, \sid_i)\}_{i\in\set{n}})$}{
-\pcfor i \in \set{n}, i \neq k \\
-\quad \require (\successi, \sid_i) = (\success, \sid) \\
+\color{red} \pcfor i \in \set{n}, i \neq k \\
+\color{red} \quad \require (\successi, \sid_i) = (\success, \sid) \\
 \pcreturn (\pk, \sk_k) \\
 }
 \end{pcvstack}
