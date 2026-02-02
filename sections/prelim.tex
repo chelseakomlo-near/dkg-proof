@@ -120,24 +120,22 @@ We assume an adversary that performs only static corruptions.
       \begin{enumerate}
         \item Let $n, t$ be parameters provided to $\FDKGAbort$.
         \item Send $(n, t)$ to the adversary $\adv$; receive $\corrupt$ from $\adv$.
-        \item Choose $\secret \rgets \Zq$ and compute
-        $\secretComm \gets g^{\secret}$.
-        \item Send $\secretComm$ to the adversary $\adv$;
-          receive $(\abort, (\SK_j)_{j \in \corrupt})$ in return.
-        \item If $\abort = 1$, send $\bot$ to all parties.
-        \item Otherwise, let $f$ be the polynomial of degree $t$
-          such that $f(0) = \secret$ and $f(j) = \SK_j$,
-          for $j \in \corrupt$.
-        \item Set $\PK = g^\secret$.
-        \item Set $\SK_i = f(i)$, for $i \in \honest$.
-        \item For $i \in \set{n}$, set $\PK_i = g^{\SK_i}$.
-        \item Send $(\PK, \{ \PK_i \}_{i \in \set{n}}, \SK_i)$ to each party $i \in \set{n}$;
-          send $(\PK, \{ \PK_i \}_{i \in \set{n}})$ to the adversary.
+        \item Let $f$ be a degree $t$ polynomial randomly sampled from $\Zq$.
+        \item Compute $\secretComm \gets g^{\secret}$
+        \item Compute $(\SK_i,\PK_i) \gets (f(i), g^{f(i)})$ for all $i \in \set{n}$.
+        \item Send $(\secretComm, \set{\PK_i}_{i\in\set{n}}, \set{\SK_i}_{i\in\set{\corrupt}})$ to the adversary $\adv$
+        \item Receive $(\abort, p(\cdot))$ from $\adv$.
+        \item If $\abort = 1$ or $deg(p) > t$:
+        \item \qquad  Send $\bot$ to all parties.
+        \item Otherwise:
+        \item \qquad Set $\PK' \gets \secretComm \cdot g^{p(0)}$
+        \item \qquad Set $\SK_i' \gets \SK_i + p(i)$ and  $\PK_i' \gets \PK_i\cdot g^{p(i)} $for all $i \in \set{n}$.
+        \item Send $(\PK', \{ \PK_i' \}_{i \in \set{n}}, \SK_i')$ to each party $i \in \set{n}$
       \end{enumerate}
     \end{center}
   \end{framed}
     \caption{Ideal functionality for key generation allowing adversarial abort,
-    as defined by Katz~\cite{Katz23}.
+    as defined by Kate et al.~\cite{KMSSSY26}.
     }
   \label{fg:keygen-abort}
 \end{figure}
