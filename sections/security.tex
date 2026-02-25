@@ -74,9 +74,9 @@ and realizes the idealized notion $\FDKGAbort$.
       follow the remainder of Round~2 honestly for all honest participants.
       There is no need to simulate as honest parties will abort in a later
       round due to invalid validity checks.
-      \item Otherwise, for all honest parties $i \in \honest, i \neq \simid$,
-      follow Round~2 as defined in the protocol.
-      \simon{Where is $\simid$ defined?}
+      \item Otherwise, pick at random an identifier $\simid \rgets \honest$, 
+      and follow Round~2 as defined in the protocol        
+      for all honest parties $i \in \honest, i \neq \simid$,
       \item However, for party $\simid$,
         simulate Round~2,
         as follows:
@@ -112,10 +112,11 @@ C[0]_{\simid} \gets \dkgchal \cdot
     \begin{itemize}
       \item Perform verification steps honestly;
         if any verification step fails, abort the protocol.
-      \item Otherwise,
-      for each corrupt party $j \in \corrupt$ and $k\in \honest$, look up $(f_j(k)) \gets \QSchnorrR[H_j]$.
+      \item
       \simon{
-        for party $\simid$, 
+        \item Otherwise, for each corrupt party $j \in \corrupt$ and $k\in \honest$, look up $f_j(k) \gets \QSchnorrR[H_j]$.
+        \item random sample honest $f_k(j)$ and send them/
+        \item For party $\simid$, compute $f_\simid(j)\gets XXX - \sum_{k\in\honest, k\neq \simid} \share_{\simid,j} - \sum_{j\in\corrupt} f_j(k)$  
       } 
     \end{itemize}
 

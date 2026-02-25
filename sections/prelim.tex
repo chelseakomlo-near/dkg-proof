@@ -140,3 +140,80 @@ We assume an adversary that performs only static corruptions.
   \label{fg:keygen-abort}
 \end{figure}
 
+\subsection{Online-Extractable \& Straight-Line Simulation Proof System}
+
+Proving the security of our protocol requires a zero-knowledge proof system
+that must be online-extractable as in the UC framework, rewinding is not allowed.
+
+One possible direction is to use zero-knowledge proofs described in \cite{GOLDEN}.
+The zero-knowledge proof relation $\mathcal{R}_P$, described in the following relation
+demonstrates that an ElGamal ciphertext is correct.
+The prover shows either that it knows the plaintext $\sk$ of an encryption,
+or that it knows the discrete logarithm of a public value $h$ chosen at random
+from $\mathbb{G}$ at the time of setup.
+The second proof demonstrates by inference that the prover knows $\sk$,
+if the discrete logarithm problem is hard in $\mathbb{G}$.
+
+$$
+  \mathcal{R}_P = \left\{ \left(g, h, \PK, c = (C_0, C_1), z, R_g, R_h \right) ; (\mathsf{sk}, r) \right\} \quad \text{iff}\\
+$$
+\begin{align*}
+  &(1) \quad C_0 = g^r; \quad C_1 = h^r \cdot g^{\mathsf{sk}} \\
+  &(2) \quad g^z = R_g \cdot \left(g^{\mathsf{sk}}\right)^{c'} \\
+  &(3) \quad h^z = R_h \cdot \left(h^{\mathsf{sk}}\right)^{c'}
+\end{align*}
+
+\simon{Ideal functionality can be found in \cite{GOLDEN}}
+
+\begin{figure}[ht]
+  \begin{framed}
+    \begin{center}
+
+\begin{itemize}
+\item \textbf{Setup:} Accepts as input public parameters $\mathsf{par}$, and a timeout constant $\delta$.
+\begin{enumerate}
+    \item Initialize $Q_K^{(1)} \leftarrow \emptyset$, $Q_K^{(2)} \leftarrow \emptyset$.
+    \item Generate public parameters $(\mathbb{F}_p, p, G, s, g) \leftarrow \mathsf{GroupGen}(1^\lambda)$.
+    \item Sample $h \leftarrow_{\$} G$.
+    \item Set $\mathsf{par} \leftarrow (\mathbb{F}_p, p, G, s, g, h)$.
+\end{enumerate}
+
+\item \textbf{KeyGen:} If $Q_K^{(1)}[\mathsf{id}] \neq \perp$, return $\perp$.  
+Else, sample $\mathsf{sk} \leftarrow_{\$} \mathbb{Z}_s$, set $\mathsf{PK} \leftarrow g^{\mathsf{sk}}$.  
+Set $Q_K^{(1)}[\mathsf{id}] = \mathsf{PK}$. Output $(\mathsf{PK}, \mathsf{sk})$.
+
+\item \textbf{Register:} Accepts as input public key $\mathsf{PK}$, identifier $\mathsf{id}'$ from party $\mathsf{id}$, and proof $\pi$.
+\begin{enumerate}
+    \item Output $\perp$ if $\mathsf{id}'$ is not the identifier for party $\mathsf{id}$.
+    \item Output $\perp$ if $Q_K^{(2)}[\mathsf{id}] \neq \perp$.
+    \item Output $\perp$ if $\mathsf{Verify}(\pi, \mathsf{PK}) \neq 1$, where $\pi$ proves the relation $\mathcal{R}_P$, as follows:
+\end{enumerate}
+
+\[
+\mathcal{R}_P =
+\left\{
+\big( g, h, \mathsf{PK}, c = (C_0, C_1), z, R_g, R_h \big) ; (\mathsf{sk}, r)
+\right\}
+\quad \text{iff}
+\]
+
+\begin{align*}
+(1)\quad & C_0 = g^r; \quad C_1 = h^r \cdot g^{\mathsf{sk}} \\
+(2)\quad & g^z = R_g \cdot (g^{\mathsf{sk}})^{c'} \\
+(3)\quad & h^z = R_h \cdot (h^{\mathsf{sk}})^{c'}
+\end{align*}
+
+\begin{enumerate}
+\setcounter{enumi}{3}
+    \item Else, set $Q_K^{(2)}[\mathsf{id}] = \mathsf{PK}$.
+\end{enumerate}
+
+\item \textbf{Query:} Wait $\delta$ amount of time (where $\delta$ is the constant defined above), to give all parties enough time to complete registration. Then, output $Q_K^{(2)}$.
+\end{itemize}
+
+    \end{center}
+  \end{framed}
+    \caption{Concrete protocol realizing ideal functionality for protocol.
+    }
+  \label{fg:keygen-abort}
+\end{figure}

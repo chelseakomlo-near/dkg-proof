@@ -90,7 +90,7 @@ A_0 \gets g^{\alpha} \\
 C_k \gets (A_0, \ldots, A_t)\\
 \color{red} H_k \gets \HashCom(k, C_k, \sid) \\
 \color{red} \gamma_k \gets (\sid, k, C_k[0]) \\
-\pi_k \rgets \NIZKUCR[\HashSchnorrR].\Sign(\alpha, \gamma_k) \\
+\pi_k \rgets \color{red} {\NIZKUCExtractable[\HashSchnorrR]}.\Prove(\alpha, \gamma_k) \\
 \color{red} \pcfor i \in \set{n}\\
 \color{red} \quad \send(i, H_k) \\
 }
@@ -104,7 +104,7 @@ C_k \gets (A_0, \ldots, A_t)\\
 \quad f_k(j) \gets \alpha + \sum_{i=1}^t a_i j^i \\
 \pcfor i \in \set{n}, i \neq k \\
 \color{red} \quad \gamma_i \gets (\sid, k, C_i[0]) \\
-\quad \require \NIZKUCR[\HashSchnorrR].\Verify(C_i[0], \gamma_i, \pi_i) \\
+\quad \require \color{red} {\NIZKUCExtractable[\HashSchnorrR]}.\Verify(C_i[0], \gamma_i, \pi_i) \\
 \color{red} \quad \require \Hash_2(\sid, i, C_i) = H_i\\
 \quad \send(i, f_k(i)) \\
 }
