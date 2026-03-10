@@ -195,7 +195,7 @@ B = \{(j, \textsf{PK}_j)\}_{j \in C}, \text{ where } C \subseteq [n].
 \]
 }
 }
-\caption{Ideal functionality $\mathcal{F}^{R_{EF}}_{zk}$ for a public-key infrastructure with proof of possession of the corresponding secret key $\textsf{sk}$. Public parameters $\textsf{par}$ are given implicitly to all algorithms. The functionality authenticates participant queries, ensuring that parties can only generate and register keys for themselves.}
+\caption{Ideal functionality $\mathcal{F}^{R_{EF}}_{zk}$ for a public-key infrastructure with proof of possession of the corresponding secret key $\textsf{sk}$. Public parameters $\textsf{par}$ are given implicitly to all algorithms.}
 \end{figure}
 
 
@@ -239,14 +239,14 @@ A practical construction that we will be using is as follows:
     \item Set $\mathsf{par} \leftarrow (\mathbb{F}_p, p, G, s, g, h)$.
 \end{enumerate}
 
-\item \textbf{KeyGen:} If $Q_K^{(1)}[\mathsf{id}] \neq \perp$, return $\perp$.  
+\item \textbf{KeyGen:} If $Q_K^{(1)}[i] \neq \perp$, return $\perp$.  
 Else, sample $\mathsf{sk} \leftarrow_{\$} \mathbb{Z}_s$, set $\mathsf{PK} \leftarrow g^{\mathsf{sk}}$.  
-Set $Q_K^{(1)}[\mathsf{id}] = \mathsf{PK}$. Output $(\mathsf{PK}, \mathsf{sk})$.
+Set $Q_K^{(1)}[i] = \mathsf{PK}$. Output $(\mathsf{PK}, \mathsf{sk})$.
 
-\item \textbf{Register:} Accepts as input public key $\mathsf{PK}$, identifier $\mathsf{id}'$ from party $\mathsf{id}$, and proof $\pi$.
+\item \textbf{Register:} Accepts as input public key $\mathsf{PK}$, identifier $i'$ from party $i$, and proof $\pi$.
 \begin{enumerate}
-    \item Output $\perp$ if $\mathsf{id}'$ is not the identifier for party $\mathsf{id}$.
-    \item Output $\perp$ if $Q_K^{(2)}[\mathsf{id}] \neq \perp$.
+    \item Output $\perp$ if $i'$ is not the identifier for party $i$.
+    \item Output $\perp$ if $Q_K^{(2)}[i] \neq \perp$.
     \item Output $\perp$ if $\mathsf{Verify}(\pi, \mathsf{PK}) \neq 1$, where $\pi$ proves the relation $\mathcal{R}_P$, as follows:
 \end{enumerate}
 
@@ -266,7 +266,7 @@ Set $Q_K^{(1)}[\mathsf{id}] = \mathsf{PK}$. Output $(\mathsf{PK}, \mathsf{sk})$.
 
 \begin{enumerate}
 \setcounter{enumi}{3}
-    \item Else, set $Q_K^{(2)}[\mathsf{id}] = \mathsf{PK}$.
+    \item Else, set $Q_K^{(2)}[i] = \mathsf{PK}$.
 \end{enumerate}
 
 \item \textbf{Query:} Wait $\delta$ amount of time (where $\delta$ is the constant defined above), to give all parties enough time to complete registration. Then, output $Q_K^{(2)}$.
