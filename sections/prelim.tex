@@ -165,24 +165,24 @@ For which we define the following ideal functionality we are trying to achieve
     \item Set $\textsf{par} \leftarrow (E(\mathbb{F}_p), p, G, s, g, h)$.
 \end{enumerate}
 
-\textbf{KeyGen:} On query with input identifier $\text{id}'$ from party $\text{id}$.
+\textbf{KeyGen:} On query with input identifier $i'$ from party $i$.
 \begin{enumerate}
-    \item Output $\perp$ if $\text{id}'$ is not the identifier for party $\text{id}$.
-    \item Output $\perp$ if $Q_K^{(1)}[\text{id}] \neq \perp$.
+    \item Output $\perp$ if $i'$ is not the identifier for party $i$.
+    \item Output $\perp$ if $Q_K^{(1)}[i] \neq \perp$.
     \item Else, generate $\textsf{sk} \xleftarrow{\$} \mathbb{Z}_s$ and $\textsf{PK} \leftarrow g^{\textsf{sk}}$.
-    \item Set $Q_K^{(1)} \leftarrow Q_K[\text{id}] = \textsf{PK}$.
+    \item Set $Q_K^{(1)} \leftarrow Q_K[i] = \textsf{PK}$.
     \item Output $(\textsf{sk}, \textsf{PK})$.
 \end{enumerate}
 
-\textbf{Register:} On query with public key $\textsf{PK}$, secret key $\textsf{sk}$, and identifier $\text{id}'$ from party $\text{id}$.
+\textbf{Register:} On query with public key $\textsf{PK}$, secret key $\textsf{sk}$, and identifier $i'$ from party $i$.
 \begin{enumerate}
-    \item Output $\perp$ if $\text{id}'$ is not the identifier for party $\text{id}$.
-    \item Output $\perp$ if $Q_K^{(2)}[\text{id}] \neq \perp$.
+    \item Output $\perp$ if $i'$ is not the identifier for party $i$.
+    \item Output $\perp$ if $Q_K^{(2)}[i] \neq \perp$.
     \item Output $\perp$ if $(\textsf{PK}, \textsf{sk})$ do not satisfy the relation $R_{\text{pki}}$, where
     \[
     \mathcal{F}^{R_{EF}}_{zk} = \{(g, \textsf{PK}, (\textsf{sk})) : \textsf{PK} = g^{\textsf{sk}}\}.
     \]
-    \item Else, set $Q_K^{(2)}[\text{id}] = \textsf{PK}$.
+    \item Else, set $Q_K^{(2)}[i] = \textsf{PK}$.
 \end{enumerate}
 
 \textbf{Query:} On query with no input, wait $\delta$ amount of time (where $\delta$ is the constant defined above), to give all parties enough time to complete registration. Then set
