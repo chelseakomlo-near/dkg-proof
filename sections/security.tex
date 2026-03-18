@@ -95,7 +95,6 @@ C[0]_{\simid} \gets \dkgchal \cdot
           \[ C_\simid[\ell] \gets C_\simid[0]^{L'_0(\ell)} \cdot
             \prod_{j \in \corrupt \cup \{ 0\}} (g^{\share_{\simid,j}})^{L'_j(\ell)} \]
         \item Generate a simulated an online extractable zero-knowledge proof $\pi_\simid$ (following Figure~\ref{fg:concrete-simulator}) for the relation $\mathcal{R}_P$ w.r.t.\@ $C[0]_\simid$.
-        \item\simon{Reprogram the random oracle $\HashCom(\sid, k, C_k)\gets H_k$} 
         \item Output $\{ (C_k, \pi_k)\}_{k \in \honest}$.
       \end{enumerate}
     \end{itemize}
@@ -109,7 +108,7 @@ C[0]_{\simid} \gets \dkgchal \cdot
         if any verification step fails, abort the protocol.
       \item
       \simon{
-        \item Otherwise, for each corrupt party $j \in \corrupt$ and $k\in \honest$, look up $f_j(k) \gets \QSchnorrR[H_j]$.
+        Otherwise, for each corrupt party $j \in \corrupt$ and $k\in \honest$, look up $f_j(k) \gets \QSchnorrR[H_j]$.
         \item random sample honest $f_k(j)$ and send them/
         \item For party $\simid$, compute $f_\simid(j)\gets XXX - \sum_{k\in\honest, k\neq \simid} \share_{\simid,j} - \sum_{j\in\corrupt} f_j(k)$  
       } 
