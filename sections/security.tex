@@ -11,8 +11,6 @@ the $\pedpopcomm$ DKG is secure under aborts in the programmable random oracle m
 and realizes the idealized notion $\FDKGAbort$.
 \end{theorem}
 
-\simon{Need to first define the DKG challenge $\dkgchal$ and to define $\simid$.}
-
 \begin{proof}
     To establish the proof of Theorem~\ref{thm:keygen-pedpopplus},
     we define a simulator $\SIM$ that is given black-box access to the static adversary $\adv$.
@@ -25,8 +23,8 @@ and realizes the idealized notion $\FDKGAbort$.
         and receives the set $\corrupt$.
         $\SIM$ then sets $\honest \gets \set{n} \setminus \corrupt$.
         \item $\SIM$ outputs $\corrupt$ to the functionality $\FDKGAbort$.
-        \item $\SIM$ receives $\dkgchal \in \Gr$ from $\FDKGAbort$.
-        \item $SIM$ initializes the table $\QSchnorr \gets \emptyset$
+        \item $\SIM$ receives the DKG challenge $\dkgchal \in \Gr$ from $\FDKGAbort$.
+        \item $\SIM$ initializes the table $\QSchnorr \gets \emptyset$
     \end{itemize}
 
     \medskip
