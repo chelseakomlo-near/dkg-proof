@@ -113,7 +113,7 @@ our proof with respect to $\FDKGAbort$ in the standalone setting is also by exte
 We assume an adversary that performs only static corruptions.
 
 
-\begin{figure}[t]
+\begin{figure}[H]
   \begin{framed}
     \begin{center}
       $\FDKGAbort$
@@ -149,11 +149,11 @@ R_{pok} = \{ (g, \mathrm{PK}, (\mathrm{sk})) : \mathrm{PK} = g^{\mathrm{sk}} \}
 
 For which we define the following ideal functionality we are trying to achieve
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \fbox{
 \parbox{0.95\linewidth}{
-\textbf{$\mathcal{F}^{R_{EF}}_{zk}$}
+\textbf{Ideal funtionality $\mathcal{F}^{\pk}_{zk}$}
 
 \medskip
 
@@ -167,7 +167,7 @@ For which we define the following ideal functionality we are trying to achieve
 
 \textbf{KeyGen:} On query with input identifier $i'$ from party $i$.
 \begin{enumerate}
-    \item Output $\perp$ if $i'$ is not the identifier for party $i$.
+    \item Output $\perp$ if $i'\neq i$.
     \item Output $\perp$ if $Q_K^{(1)}[i] \neq \perp$.
     \item Else, generate $\textsf{sk} \xleftarrow{\$} \mathbb{Z}_s$ and $\textsf{PK} \leftarrow g^{\textsf{sk}}$.
     \item Set $Q_K^{(1)} \leftarrow Q_K[i] = \textsf{PK}$.
@@ -176,11 +176,11 @@ For which we define the following ideal functionality we are trying to achieve
 
 \textbf{Register:} On query with public key $\textsf{PK}$, secret key $\textsf{sk}$, and identifier $i'$ from party $i$.
 \begin{enumerate}
-    \item Output $\perp$ if $i'$ is not the identifier for party $i$.
+    \item Output $\perp$ if $i'\neq i$.
     \item Output $\perp$ if $Q_K^{(2)}[i] \neq \perp$.
     \item Output $\perp$ if $(\textsf{PK}, \textsf{sk})$ do not satisfy the relation $R_{\text{pki}}$, where
     \[
-    \mathcal{F}^{R_{EF}}_{zk} = \{(g, \textsf{PK}, (\textsf{sk})) : \textsf{PK} = g^{\textsf{sk}}\}.
+    \mathcal{F}^{\pk}_{zk} = \{(g, \textsf{PK}, (\textsf{sk})) : \textsf{PK} = g^{\textsf{sk}}\}.
     \]
     \item Else, set $Q_K^{(2)}[i] = \textsf{PK}$.
 \end{enumerate}
@@ -195,13 +195,13 @@ B = \{(j, \textsf{PK}_j)\}_{j \in C}, \text{ where } C \subseteq [n].
 \]
 }
 }
-\caption{Ideal functionality $\mathcal{F}^{R_{EF}}_{zk}$ for a public-key infrastructure with proof of possession of the corresponding secret key $\textsf{sk}$. Public parameters $\textsf{par}$ are given implicitly to all algorithms.}
+\caption{Ideal functionality $\mathcal{F}^{\pk}_{zk}$ for a public-key infrastructure with proof of possession of the corresponding secret key $\textsf{sk}$. Public parameters $\textsf{par}$ are given implicitly to all algorithms.}
 \end{figure}
 
 
 
 
-Proving the security of our protocol requires realizing $\mathcal{F}^{R_{EF}}_{zk}$ which in our case requires
+Proving the security of our protocol requires realizing $\mathcal{F}^{\pk}_{zk}$ which in our case requires
 an online-extractable zero-knowledge proof system (in the UC framework rewinding is not allowed).
 
 One possible direction is to use zero-knowledge proofs described in \cite{GOLDEN}.
@@ -221,12 +221,11 @@ $$
   &(2) \quad g^z = R_g \cdot \left(g^{\mathsf{sk}}\right)^{c'} \\
   &(3) \quad h^z = R_h \cdot \left(h^{\mathsf{sk}}\right)^{c'}
 \end{align*}
-\simon{How to add the session identifier in the relation?}
 
-A practical construction that we will be using is as follows:
+A practical construction that we will be using Figure~\ref{fg:concrete-simulator},
+where the proof $\pi$ is practically implemented using Schnorr proofs.
 
-
-\begin{figure}[ht]
+\begin{figure}[H]
   \begin{framed}
     \begin{center}
 
@@ -245,7 +244,7 @@ Set $Q_K^{(1)}[i] = \mathsf{PK}$. Output $(\mathsf{PK}, \mathsf{sk})$.
 
 \item \textbf{Register:} Accepts as input public key $\mathsf{PK}$, identifier $i'$ from party $i$, and proof $\pi$.
 \begin{enumerate}
-    \item Output $\perp$ if $i'$ is not the identifier for party $i$.
+    \item Output $\perp$ if $i' \neq i$.
     \item Output $\perp$ if $Q_K^{(2)}[i] \neq \perp$.
     \item Output $\perp$ if $\mathsf{Verify}(\pi, \mathsf{PK}) \neq 1$, where $\pi$ proves the relation $\mathcal{R}_P$, as follows:
 \end{enumerate}
@@ -274,7 +273,7 @@ Set $Q_K^{(1)}[i] = \mathsf{PK}$. Output $(\mathsf{PK}, \mathsf{sk})$.
 
     \end{center}
   \end{framed}
-    \caption{Concrete protocol realizing $\mathcal{F}^{R_{EF}}_{zk}$.
+    \caption{Concrete protocol realizing $\mathcal{F}^{\pk}_{zk}$.
     }
-  \label{fg:keygen-abort}
+  \label{fg:concrete-simulator}
 \end{figure}
