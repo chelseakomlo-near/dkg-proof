@@ -86,10 +86,10 @@ C_{\simid}[0] \gets \dkgchal \cdot
               \prod_{j \in \corrupt} (C_{j}[0])^{-1}
           \end{equation}
           where $C_{k}[0]$ are from the honest parties $k \in \honest, k \neq \simid$.
-        \item Randomly sample corrupt parties' shares $\share_{\simid,j} \rgets \Zq$ for all \alert{$j \in \corrupt$}.
+        \item Randomly sample corrupt parties' shares $\share_{\simid,j} \rgets \Zq$ for all $j \in \corrupt$.
         \item For $\ell \in \set{\tcor}$, set the remaining commitments, as follows:
           \[ C_\simid[\ell] \gets C_\simid[0]^{L'_0(\ell)} \cdot
-            \prod_{j \in \corrupt \alert{\cup \{ 0\}}} (g^{\share_{\simid,j}})^{L'_j(\ell)} \]
+            \prod_{j \in \corrupt } (g^{\share_{\simid,j}})^{L'_j(\ell)} \]
         where $L'_0(\ell)$ and $L'_j(\ell)$ are the evaluation of the lagrange polynomials for the set $\{ 0\cup\corrupt \}$
         evaluated at $\ell$ (See Section~\ref{prelim:secret-sharing}).
         \item Generate a simulated an online extractable zero-knowledge proof $\pi_\simid$ (following Figure~\ref{fg:concrete-simulator}) for the relation $\mathcal{R}_P$ w.r.t.\@ $C_\simid[0]$.
@@ -106,13 +106,14 @@ C_{\simid}[0] \gets \dkgchal \cdot
       \item
         \item When the adversary queries party $k \in \honest\setminus\{\simid\}$, output $f_k(j)$ extracted from the honest participant.
         \item Otherwise, for each corrupt party $j \in \corrupt$ look up $f_j(0) \gets \QSchnorrR[H_j]$.
+        \item For party $\simid$, set $f_\simid(j) \gets \share_{\simid,j}$
+
+      \simon{ Check:
         \item For party $\simid$, compute $f_\simid(j)\gets (\alert{\dl} - \sum_{k\in\honest, k\neq \simid} f_k(0) - \sum_{j\in\corrupt} f_j(0)) \cdot\sum_{\ell\in\set{t}} L_0'(\ell) + \sum_{j\in\corrupt} \sum_{\ell\in\set{t}} j^l  L_j'(\ell) \share_{\simid,j}$ 
          \\
          $f_\simid(j)\gets\alert{\dl} - \sum_{i\in\set{n}, i\neq \simid} f_i(0) + \sum_{j\in\corrupt} \sum_{\ell\in\set{t}} j^l L_j'(\ell)\share_{\simid,j}$\\
          In the previous formula we used that $\sum_{\ell\in\set{t}} L_0'(\ell) =1$ and we compacted the sum.
-
-        \item \simon{Shouldn't the $\dl$ be eliminated somehow?}
-        \item \simon{Intuition: the answer should simply be $\share_{\simid,j}$? or something like  $\sum_{j\in\corrupt} \sum_{\ell\in\set{t}} j^l L_j'(\ell)\share_{\simid,j}$?}
+      }
     \end{itemize}
 
     \medskip
