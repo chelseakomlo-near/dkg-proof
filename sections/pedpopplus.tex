@@ -81,7 +81,7 @@ C_k \gets (A_0, \ldots, A_{\tcor})\\
 \begin{pcvstack}
 \procedure{$\KeyGen_3(\{C_i, \pi_i\}_{i\in\set{n}})$}{
 \pcfor j \in \set{n} \\
-\quad f_k(j) \gets \alpha + \sum_{i=1}^t a_i j^i \\
+\quad f_k(j) \gets \alpha + \sum_{i=1}^{\tcor} a_i j^i \\
 \pcfor i \in \set{n}, i \neq k \\
 \color{red} \quad \gamma_i \gets (\sid, k, C_i[0]) \\
 \quad \require \color{red} {\NIZKUCExtractable[\HashSchnorrR]}.\Verify(C_i[0], \gamma_i, \pi_i) \\
@@ -157,7 +157,7 @@ H_k \gets \Hash_2(\sid, k, C_k) \\
 }
 \procedure{$\KeyGen_4(\{f_i(k)\}_{i\in\set{n}})$}{
 \pcfor i \in \set{n}, i \neq k \\
-\quad \require g^{f_i(k)} = \prod_{j=0}^t C_i[j]^{k^j} \\
+\quad \require g^{f_i(k)} = \prod_{j=0}^{\tcor} C_i[j]^{k^j} \\
 % \pcfor i \in \set{n} \\
 % \quad \pk_i \gets \prod_{j=1}^n \prod_{\ell=0}^{t-1} C_j[\ell]^{i^\ell}  \\
 \sk_k \gets \sum_{i=1}^n f_i(k) \\
