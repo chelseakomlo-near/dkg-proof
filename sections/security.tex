@@ -87,7 +87,7 @@ C_{\simid}[0] \gets \dkgchal \cdot
           \end{equation}
           where $C_{k}[0]$ are from the honest parties $k \in \honest, k \neq \simid$.
         \item Randomly sample corrupt parties' shares $\share_{\simid,j} \rgets \Zq$ for all $j \in \corrupt$.
-        \item For $\ell \in \{ 1, \ldots, \tcor\}$, set the remaining commitments, as follows:
+        \item For $\ell \in \set{\tcor}$, set the remaining commitments, as follows:
           \[ C_\simid[\ell] \gets C_\simid[0]^{L'_0(\ell)} \cdot
             \prod_{j \in \corrupt \cup \{ 0\}} (g^{\share_{\simid,j}})^{L'_j(\ell)} \]
         where $L'_0(\ell)$ and $L'_j(\ell)$ are the evaluation of the lagrange polynomials for the set $\{ 0\cup\corrupt \}$

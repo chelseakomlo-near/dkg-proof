@@ -63,11 +63,11 @@ Checking such invariant is due to the fact that honest new participants shall no
 }
 \procedure{$\KeyGen_1(\sid_1, \ldots, \sid_n)$}{
 \color{red} \sid \gets \HashSid(\sid_1, \ldots, \sid_n) \\
-(\alpha, a_1, \ldots, a_t) \rgets \Zq^t \\
+(\alpha, a_1, \ldots, a_{\tcor}) \rgets \Zq^t \\
 A_0 \gets g^{\alpha} \\
-\pcfor i \in \set{t} \pcdo \\
+\pcfor i \in \set{\tcor} \pcdo \\
 \quad A_i \gets g^{a_i} \\
-C_k \gets (A_0, \ldots, A_t)\\
+C_k \gets (A_0, \ldots, A_{\tcor})\\
 \color{red} H_k \gets \HashCom(k, C_k, \sid) \\
 \color{red} \gamma_k \gets (\sid, k, C_k[0]) \\
 \pi_k \rgets \color{red} {\NIZKUCExtractable[\HashSchnorrR]}.\Prove(\alpha, \gamma_k) \\
@@ -90,7 +90,7 @@ C_k \gets (A_0, \ldots, A_t)\\
 }
 \procedure{$\KeyGen_4(\{f_i(k)\}_{i\in\set{n}})$}{
 \pcfor i \in \set{n}, i \neq k \\
-\quad \require g^{f_i(k)} = \prod_{j=0}^t C_i[j]^{k^j} \\
+\quad \require g^{f_i(k)} = \prod_{j=0}^{\tcor} C_i[j]^{k^j} \\
 \color{red} \text{(No derivation for participants public key)}\\
 % \pcfor i \in \set{n} \\
 % \quad \pk_i \gets \prod_{j=1}^n \prod_{\ell=0}^{t-1} C_j[\ell]^{i^\ell}  \\
@@ -126,15 +126,15 @@ See Section~\ref{sec:comm-model} for definitions of $\send$ and $\sendbroadcast$
 }
 \procedure{$\KeyGen_1(\sid_1, \ldots, \sid_n)$}{
 \sid \gets \Hash_1(\sid_1, \ldots, \sid_n) \\
-\fbox{$(a_1, \ldots, a_t) \rgets \Zq^{t-1} $} \\
+\fbox{$(a_1, \ldots, a_{\tcor}) \rgets \Zq^{\tcor} $} \\
 \fbox{$\pcif k \notin \oldsigners$ } \\
 \quad \fbox{$\alpha \gets 0$} \\
 \fbox{$\pcelse$} \\
 \quad \fbox{ $\alpha \gets \linearize_k(\oldsk_k, I)$}\\
 A_0 \gets g^{\alpha} \\
-\pcfor i \in \set{t} \\
+\pcfor i \in \set{\tcor} \\
 \quad A_i \gets g^{a_i} \\
-C_k \gets (A_0, \ldots, A_t)\\
+C_k \gets (A_0, \ldots, A_{\tcor})\\
 H_k \gets \Hash_2(\sid, k, C_k) \\
 \gamma_k \gets (\sid, k, C_k[0]) \\
 \pi_k \rgets \NIZKUCExtractable[\HashSchnorrR].\Sign(\alpha, \gamma_k) \\
@@ -148,7 +148,7 @@ H_k \gets \Hash_2(\sid, k, C_k) \\
 \begin{pcvstack}
 \procedure{$\KeyGen_3(\{C_i, \pi_i\}_{i\in\set{n}})$}{
 \pcfor j \in \set{n} \\
-\quad f_k(j) \gets \alpha + \sum_{i=1}^t a_i j^i \\
+\quad f_k(j) \gets \alpha + \sum_{i=1}^{\tcor} a_i j^i \\
 \pcfor i \in \set{n}, i \neq k \\
 \quad \gamma_i \gets (\sid, k, C_i[0]) \\
 \quad \require \NIZKUCExtractable[\HashSchnorrR].\Verify(C_i[0], \gamma_i, \pi_i) \\

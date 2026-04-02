@@ -16,14 +16,14 @@ The master verification key, verification key shares, and private verification k
 \begin{pchstack}[boxed,center,space=1em]
 \begin{pcvstack}
 \procedure{$\KeyGen_1(k, t, n)$}{
-(\alpha, a_1, \ldots, a_t) \rgets \Zq^t \\
+(\alpha, a_1, \ldots, a_{\tcor}) \rgets \Zq^{t} \\
 \text{\algcom local party has index k}\\
 A_0 \gets g^{\alpha} \\
-\pcfor i \in \set{t} \pcdo \\
+\pcfor i \in \set{\tcor} \pcdo \\
 \quad A_i \gets g^{a_i} \\
-C_k \gets (A_0, \ldots, A_t) \\
+C_k \gets (A_0, \ldots, A_{\tcor}) \\
 \pcfor j \in \set{n} \pcdo \\
-\quad f(j) \gets \alpha + \sum_{i=1}^t a_i j^i \\
+\quad f(j) \gets \alpha + \sum_{i=1}^{\tcor} a_i j^i \\
 \pi_k \rgets \schnorr[\Hash_1].\Sign(\alpha, \Phi)\\
 %\state_k \gets (\{ (i, f(i))\}_{i \in \set{n}} ) \\
 \sendbroadcast((C_k, \pi_k )) \\
@@ -42,10 +42,10 @@ C_k \gets (A_0, \ldots, A_t) \\
   \text{\algcom Check proof of knowledge of $\sk$} \\
   \quad \require \schnorr[\Hash_1].\Verify(C_i[0], \Phi, \pi_i) \neq 1 \\
   \text{\algcom Check correctness of share} \\
-  \quad \require g^{f_i(k)} \neq \prod_{j=0}^t C_i[j]^{k^j} \\
+  \quad \require g^{f_i(k)} \neq \prod_{j=0}^{\tcor} C_i[j]^{k^j} \\
   \pcfor i \in \set{n} \pcdo \\
   \text{\algcom Derive each participant's public key share}  \\
-  \quad \pk_i \gets \prod_{j=1}^n \prod_{\ell=0}^{t-1} C_j[\ell]^{i^\ell}\\
+  \quad \pk_i \gets \prod_{j=1}^n \prod_{\ell=0}^{\tcor} C_j[\ell]^{i^\ell}\\
   \sk_k \gets \sum_{i=1}^n f_i(k) \\
   \pk \gets \prod_{i=1}^n C_i[0]\\
   \pcreturn (\pk, \{ \pk_i\}_{i=1}^n, \sk_k )
