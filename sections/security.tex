@@ -74,8 +74,8 @@ and realizes the idealized notion $\FDKGAbort$.
       follow the remainder of Round~2 honestly for all honest participants.
       There is no need to simulate as honest parties will abort in a later
       round due to invalid validity checks.
-      \item Otherwise, pick at random an identifier $\simid \rgets \honest$, 
-      and follow Round~2 as defined in the protocol        
+      \item Otherwise, pick at random an identifier $\simid \rgets \honest$,
+      and follow Round~2 as defined in the protocol
       for all honest parties $i \in \honest, i \neq \simid$,
       \item However, for party $\simid$,
         simulate Round~2,
@@ -91,10 +91,12 @@ C_{\simid}[0] \gets \dkgchal \cdot
           where $C_{k}[0]$ are from the honest parties $k \in \honest, k \neq \simid$.
         \item Randomly sample corrupt parties' shares $\share_{\simid,j} \rgets \Zq$ for all $j \in \corrupt$.
         \item For $\ell \in \set{\tcor}$, set the remaining commitments, as follows:
-          \[ C_\simid[\ell] \gets C_\simid[0]^{L'_0(\ell)} \cdot
-            \prod_{j \in \corrupt } (g^{\share_{\simid,j}})^{L'_j(\ell)} \]
-        where $L'_0(\ell)$ and $L'_j(\ell)$ are the evaluation of the lagrange polynomials for the set $\{ 0\cup\corrupt \}$
-        evaluated at $\ell$ (See Section~\ref{prelim:secret-sharing}).
+          \[ C_\simid[\ell] \gets C_\simid[0]^{\lambda'_{0,\ell}} \cdot
+            \prod_{j \in \corrupt } (g^{\share_{\simid,j}})^{\lambda'_{j,\ell}} \]
+        where $\lambda'_{0,\ell}$ and $\lambda'_{j,\ell}$ denote the coefficient of $x^\ell$ in the Lagrange basis
+        polynomials $L'_0$ and $L'_j$ for the node set $\{ 0\}\cup\corrupt$ (See Section~\ref{prelim:secret-sharing}).
+        This makes $C_\simid[\ell] = g^{a_\ell}$ a commitment to the $\ell$-th \emph{coefficient} $a_\ell$ of $f_\simid$,
+        as required by the protocol's commitment vectors and the Round~4 check $g^{f_i(k)} = \prod_{\ell} C_i[\ell]^{k^\ell}$.
         \item Produce a simulated proof $\pi_\simid$ for the statement $\PK_\simid \coloneqq C_\simid[0]$
           with context $\gamma_\simid \gets (\sid, \simid, C_\simid[0])$.
           Since $C_\simid[0]$ is defined in Equation~\eqref{eq:simid-comm} so as to embed the challenge
@@ -144,13 +146,8 @@ C_{\simid}[0] \gets \dkgchal \cdot
           using the trapdoor $\eta = \log_g h$: compute $g^{f_j(0)} \gets C_{j,1} \cdot C_{j,0}^{-\eta}$,
           from which $f_j(0)$ is determined. This extraction is straight-line (no rewinding), as required in the UC setting.
         \item For party $\simid$, set $f_\simid(j) \gets \share_{\simid,j}$
-
-      \simon{ Check:
-        \item For party $\simid$, compute $f_\simid(j)\gets (\alert{\dl} - \sum_{k\in\honest, k\neq \simid} f_k(0) - \sum_{j\in\corrupt} f_j(0)) \cdot\sum_{\ell\in\set{t}} L_0'(\ell) + \sum_{j\in\corrupt} \sum_{\ell\in\set{t}} j^l  L_j'(\ell) \share_{\simid,j}$ 
-         \\
-         $f_\simid(j)\gets\alert{\dl} - \sum_{i\in\set{n}, i\neq \simid} f_i(0) + \sum_{j\in\corrupt} \sum_{\ell\in\set{t}} j^l L_j'(\ell)\share_{\simid,j}$\\
-         In the previous formula we used that $\sum_{\ell\in\set{t}} L_0'(\ell) =1$ and we compacted the sum.
-      }
+        (By definition $j \in \corrupt$ is an interpolation node of $f_\simid$;
+        we have $f_\simid(j) = \share_{\simid,j}$).
     \end{itemize}
 
     \medskip
