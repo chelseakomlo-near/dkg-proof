@@ -68,13 +68,13 @@ A_0 \gets g^{\alpha} \\
 \pcfor i \in \set{\tcor} \pcdo \\
 \quad A_i \gets g^{a_i} \\
 C_k \gets (A_0, \ldots, A_{\tcor})\\
-\color{red} H_k \gets \HashCom(k, C_k, \sid) \\
+\color{red} h_k \gets \HashCom(\sid, k, C_k) \\
 \color{red} \gamma_k \gets (\sid, k, C_k[0]) \\
 \pi_k \rgets \color{red} {\NIZKUCExtractable[\HashSchnorrR]}.\Prove(\alpha, \gamma_k) \\
 \color{red} \pcfor i \in \set{n}\\
-\color{red} \quad \send(i, H_k) \\
+\color{red} \quad \send(i, h_k) \\
 }
-\procedure{$\KeyGen_2(\{H_i\}_{i\in\set{n}})$}{
+\procedure{$\KeyGen_2(\{h_i\}_{i\in\set{n}})$}{
 \sendbroadcast(C_k, \pi_k) \\
 }
 \end{pcvstack}
@@ -85,7 +85,7 @@ C_k \gets (A_0, \ldots, A_{\tcor})\\
 \pcfor i \in \set{n}, i \neq k \\
 \color{red} \quad \gamma_i \gets (\sid, k, C_i[0]) \\
 \quad \require \color{red} {\NIZKUCExtractable[\HashSchnorrR]}.\Verify(C_i[0], \gamma_i, \pi_i) \\
-\color{red} \quad \require \Hash_2(\sid, i, C_i) = H_i\\
+\color{red} \quad \require \HashCom(\sid, i, C_i) = h_i\\
 \quad \send(i, f_k(i)) \\
 }
 \procedure{$\KeyGen_4(\{f_i(k)\}_{i\in\set{n}})$}{
@@ -135,13 +135,13 @@ A_0 \gets g^{\alpha} \\
 \pcfor i \in \set{\tcor} \\
 \quad A_i \gets g^{a_i} \\
 C_k \gets (A_0, \ldots, A_{\tcor})\\
-H_k \gets \Hash_2(\sid, k, C_k) \\
+h_k \gets \HashCom(\sid, k, C_k) \\
 \gamma_k \gets (\sid, k, C_k[0]) \\
 \pi_k \rgets \NIZKUCExtractable[\HashSchnorrR].\Sign(\alpha, \gamma_k) \\
 \pcfor i \in \set{n}\\
-\quad \send(i, H_k) \\
+\quad \send(i, h_k) \\
 }
-\procedure{$\KeyGen_2(\{H_i\}_{i\in\set{n}})$}{
+\procedure{$\KeyGen_2(\{h_i\}_{i\in\set{n}})$}{
 \sendbroadcast(C_k, \pi_k) \\
 }
 \end{pcvstack}
@@ -152,7 +152,7 @@ H_k \gets \Hash_2(\sid, k, C_k) \\
 \pcfor i \in \set{n}, i \neq k \\
 \quad \gamma_i \gets (\sid, k, C_i[0]) \\
 \quad \require \NIZKUCExtractable[\HashSchnorrR].\Verify(C_i[0], \gamma_i, \pi_i) \\
-\quad \require \Hash_2(\sid, i, C_i) = H_i\\
+\quad \require \HashCom(\sid, i, C_i) = h_i\\
 \quad \send(i, f_k(i)) \\
 }
 \procedure{$\KeyGen_4(\{f_i(k)\}_{i\in\set{n}})$}{

@@ -53,21 +53,21 @@ and realizes the idealized notion $\FDKGAbort$.
     \begin{itemize}
     \item Derive $\sid$ honestly by querying the random oracle $\Hash_1$ on $\sid_1, \ldots, \sid_n$.
     \item  For each honest party $i \in \honest$,
-    sample $H_i \rgets \Zq$.
+    sample $h_i \rgets \Zq$.
     \item When the adversary queries party $k \in \honest$,
-    output $H_k$.
+    output $h_k$.
     \end{itemize}
 
     \medskip
 
     \paragraph{\bf Round 2.}
-    On input $(\{H_i\}_{i\in\set{n}})$,
+    On input $(\{h_i\}_{i\in\set{n}})$,
     to simulate Round~2 of the DKG,
     $\SIM$ does the following:
     \begin{itemize}
       \item For each corrupt party $j \in \corrupt$,
-      look up a previously input tuple $(\sid, j, C_j)$ for the output $H_j$ using the random oracle $\Hash_2$.
-      \item If any $H_j$ does not correspond to a valid entry or to the current $\sid$,
+      look up a previously input tuple $(\sid, j, C_j)$ for the output $h_j$ using the random oracle $\Hash_2$.
+      \item If any $h_j$ does not correspond to a valid entry or to the current $\sid$,
       follow the remainder of Round~2 honestly for all honest participants.
       There is no need to simulate as honest parties will abort in a later
       round due to invalid validity checks.
@@ -105,7 +105,7 @@ C_{\simid}[0] \gets \dkgchal \cdot
         if any verification step fails, abort the protocol.
       \item
         \item When the adversary queries party $k \in \honest\setminus\{\simid\}$, output $f_k(j)$ extracted from the honest participant.
-        \item Otherwise, for each corrupt party $j \in \corrupt$ look up $f_j(0) \gets \QSchnorrR[H_j]$.
+        \item Otherwise, for each corrupt party $j \in \corrupt$ look up $f_j(0) \gets \QSchnorrR[h_j]$.
         \item For party $\simid$, set $f_\simid(j) \gets \share_{\simid,j}$
 
       \simon{ Check:
