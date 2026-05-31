@@ -222,7 +222,21 @@ $$
   &(2) \quad g^z = R_g \cdot \left(g^{\mathsf{sk}}\right)^{c'} \\
   &(3) \quad h^z = R_h \cdot \left(h^{\mathsf{sk}}\right)^{c'}
 \end{align*}
-\simon{Verify the need of (1) and define what is $c'$}
+
+The elements of the relation are as follows.
+The witness is the pair $(\sk, r)$, where $\sk$ is the secret key and $r$ the encryption randomness.
+The statement consists of: the generator $g$ of $\Gr$ and the random group element $h \rgets \Gr$ fixed at setup;
+the public key $\PK = g^{\sk}$; the ElGamal ciphertext $c = (C_0, C_1)$ of $g^{\sk}$ under randomness $r$;
+and the Schnorr proof transcript $(R_g, R_h, z)$, where $R_g, R_h$ are the prover's commitments and $z$ is the response.
+The challenge $c'$ is \emph{not} provided by the prover: following the Fiat--Shamir transform,
+the verifier derives it directly as
+\[
+  c' = \HashSchnorrR(R_g, R_h, \PK, \mathsf{transcript}),
+\]
+where the hash binds the commitments $R_g, R_h$, the statement $\PK$, and the remaining transcript elements
+(the public values $g, h$, the ciphertext $c$, and the proof context $\gamma$, e.g.\@ $\gamma = (\sid, k, C_k[0])$ in the protocol).
+
+\simon{Verify the need of (1)}
 
 A practical construction that we will be using Figure~\ref{fg:concrete-simulator},
 where the proof $\pi$ is practically implemented using Schnorr proofs.
@@ -265,7 +279,18 @@ Set $Q_K^{(1)}[i] = \mathsf{PK}$. Output $(\mathsf{PK}, \mathsf{sk})$.
 (2)\quad & g^z = R_g \cdot (g^{\mathsf{sk}})^{c'} \\
 (3)\quad & h^z = R_h \cdot (h^{\mathsf{sk}})^{c'}
 \end{align*}
-\simon{Verify the need of (1) and define what is $c'$}
+
+Here the witness is $(\sk, r)$; the statement comprises the generator $g$, the setup element $h \rgets \Gr$,
+the public key $\PK = g^{\sk}$, the ElGamal ciphertext $c = (C_0, C_1)$, and the proof transcript $(R_g, R_h, z)$
+with commitments $R_g, R_h$ and response $z$.
+The challenge $c'$ is not part of the proof: the verifier recomputes it directly via Fiat--Shamir as
+\[
+  c' = \HashSchnorrR(R_g, R_h, \PK, \mathsf{transcript}),
+\]
+binding the commitments $R_g, R_h$, the statement $\PK$, and the remaining transcript elements
+($g, h$, the ciphertext $c$, and the proof context).
+
+\simon{Verify the need of (1)}
 
 \begin{enumerate}
 \setcounter{enumi}{3}

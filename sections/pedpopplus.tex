@@ -81,7 +81,7 @@ C_k \gets (A_0, \ldots, A_{\tcor})\\
 \begin{pcvstack}
 \procedure{$\KeyGen_3(\{C_i, \pi_i\}_{i\in\set{n}})$}{
 \pcfor j \in \set{n} \\
-\quad f_k(j) \gets \alpha + \sum_{i=1}^{\tcor} a_i j^i \\
+\quad f_k(j) \gets \alpha + \sum_{i=1}^{\tcor} a_i j^i \pccomment{Shamir secret sharing, see Section~\ref{prelim:secret-sharing}} \\
 \pcfor i \in \set{n}, i \neq k \\
 \color{red} \quad \gamma_i \gets (\sid, k, C_i[0]) \\
 \quad \require \color{red} {\NIZKUCExtractable[\HashSchnorrR]}.\Verify(C_i[0], \gamma_i, \pi_i) \\
@@ -148,7 +148,7 @@ h_k \gets \HashCom(\sid, k, C_k) \\
 \begin{pcvstack}
 \procedure{$\KeyGen_3(\{C_i, \pi_i\}_{i\in\set{n}})$}{
 \pcfor j \in \set{n} \\
-\quad f_k(j) \gets \alpha + \sum_{i=1}^{\tcor} a_i j^i \\
+\quad f_k(j) \gets \alpha + \sum_{i=1}^{\tcor} a_i j^i \pccomment{Shamir secret sharing, see Section~\ref{prelim:secret-sharing}} \\
 \pcfor i \in \set{n}, i \neq k \\
 \quad \gamma_i \gets (\sid, k, C_i[0]) \\
 \quad \require \NIZKUCExtractable[\HashSchnorrR].\Verify(C_i[0], \gamma_i, \pi_i) \\
