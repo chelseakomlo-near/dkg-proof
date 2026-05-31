@@ -24,6 +24,9 @@ and realizes the idealized notion $\FDKGAbort$.
         $\SIM$ then sets $\honest \gets \set{n} \setminus \corrupt$.
         \item $\SIM$ outputs $\corrupt$ to the functionality $\FDKGAbort$.
         \item $\SIM$ receives the DKG challenge $\dkgchal \in \Gr$ from $\FDKGAbort$.
+        \item $\SIM$ sets up the verifiable-encryption trapdoor: it samples $\eta \rgets \Zq$, sets
+        $h \gets g^{\eta}$, and publishes $h$ as the random group element of the proof system,
+        keeping $\eta$ secret so that it can later extract by decryption (online, without rewinding).
         \item $\SIM$ initializes the table $\QSchnorr \gets \emptyset$
     \end{itemize}
 
@@ -92,10 +95,41 @@ C_{\simid}[0] \gets \dkgchal \cdot
             \prod_{j \in \corrupt } (g^{\share_{\simid,j}})^{L'_j(\ell)} \]
         where $L'_0(\ell)$ and $L'_j(\ell)$ are the evaluation of the lagrange polynomials for the set $\{ 0\cup\corrupt \}$
         evaluated at $\ell$ (See Section~\ref{prelim:secret-sharing}).
-        \item Generate a simulated an online extractable zero-knowledge proof $\pi_\simid$ (following Figure~\ref{fg:concrete-simulator}) for the relation $\mathcal{R}_P$ w.r.t.\@ $C_\simid[0]$.
+        \item Produce a simulated proof $\pi_\simid$ for the statement $\PK_\simid \coloneqq C_\simid[0]$
+          with context $\gamma_\simid \gets (\sid, \simid, C_\simid[0])$.
+          Since $C_\simid[0]$ is defined in Equation~\eqref{eq:simid-comm} so as to embed the challenge
+          $\dkgchal$, $\SIM$ does not know the witness $\sk$; it instead runs the honest-verifier
+          zero-knowledge simulator of $\mathcal{R}_P$ (Figure~\ref{fg:concrete-simulator}),
+          reprogramming the random oracle $\HashSchnorrR$:
+          \begin{enumerate}
+            \item Sample a challenge $c' \rgets \Zq$ and a response $z \rgets \Zq$ uniformly and
+              independently at random.
+            \item Set $C_0 \gets g^{z} \cdot \PK_\simid^{-c'}$, so that verification equation~(2),
+              $g^z = C_0 \cdot \PK_\simid^{c'}$, holds.
+            \item Using the trapdoor $\eta = \log_g h$ from the setup, compute $h^{\sk} = \PK_\simid^{\eta}$
+              and set $C_1 \gets h^{z} \cdot \PK_\simid^{\,1 - \eta c'}$, so that equation~(3),
+              $h^z = (C_1 \cdot \PK_\simid^{-1}) \cdot (h^{\sk})^{c'}$, holds.
+            \item Reprogram the random oracle so that $\HashSchnorrR(C_0, C_1, \PK_\simid, \gamma_\simid) \gets c'$,
+              and set $\pi_\simid \gets (c = (C_0, C_1), z)$.
+          \end{enumerate}
         \item When the adversary queries party $k \in \honest$, output $(C_k, \pi_k)$.
       \end{enumerate}
     \end{itemize}
+
+    \medskip
+
+    \paragraph{\bf Bad event: reprogramming failure.}
+    The last step above reprograms $\HashSchnorrR$ at the point $(C_0, C_1, \PK_\simid, \gamma_\simid)$.
+    This is sound only if $\adv$ has not already queried $\HashSchnorrR$ at that point; otherwise $\SIM$
+    would be forced to assign two distinct outputs to the same input, an inconsistency detectable by
+    $\adv$, and $\SIM$ aborts. Since $C_0 = g^{z} \cdot \PK_\simid^{-c'}$ is uniformly distributed in
+    $\Gr$ (the response $z \rgets \Zq$ is fresh and independent of the adversary's view prior to the
+    proof), the reprogramming point is unpredictable to $\adv$. Letting $q_h$ bound the number of
+    queries $\adv$ makes to $\HashSchnorrR$, the probability of this collision is at most
+    $q_h / \lvert \Gr \rvert = q_h / q$, which is negligible in $\lambda$. Conditioned on the collision
+    not occurring, the simulated proof $\pi_\simid$ is distributed identically to one produced by an
+    honest prover, so the adversary's view in this hybrid is statistically indistinguishable
+    (within $q_h/q$) from its view in the real protocol.
 
     \paragraph{\bf Round 3.}
     On input $\KeyGen_3(\{C_i, \pi_i\}_{i\in\set{n}})$,
@@ -105,7 +139,10 @@ C_{\simid}[0] \gets \dkgchal \cdot
         if any verification step fails, abort the protocol.
       \item
         \item When the adversary queries party $k \in \honest\setminus\{\simid\}$, output $f_k(j)$ extracted from the honest participant.
-        \item Otherwise, for each corrupt party $j \in \corrupt$ look up $f_j(0) \gets \QSchnorrR[h_j]$.
+        \item Otherwise, for each corrupt party $j \in \corrupt$, extract its committed contribution by
+          decrypting the verifiable-encryption ciphertext $c_j = (C_{j,0}, C_{j,1})$ contained in $\pi_j$
+          using the trapdoor $\eta = \log_g h$: compute $g^{f_j(0)} \gets C_{j,1} \cdot C_{j,0}^{-\eta}$,
+          from which $f_j(0)$ is determined. This extraction is straight-line (no rewinding), as required in the UC setting.
         \item For party $\simid$, set $f_\simid(j) \gets \share_{\simid,j}$
 
       \simon{ Check:
