@@ -58,7 +58,7 @@ Checking such invariant is due to the fact that honest new participants shall no
 \require k\in \set{n}\\
 \require t\leq n\\
 \sid_i \rgets \zo^\lambda \\
-\sendbroadcast(\sid_i) \\
+\broadcast(\sid_i) \\
 }
 }
 \procedure{$\KeyGen_1(\sid_1, \ldots, \sid_n)$}{
@@ -75,7 +75,7 @@ C_k \gets (A_0, \ldots, A_{\tcor})\\
 \color{red} \quad \send(i, h_k) \\
 }
 \procedure{$\KeyGen_2(\{h_i\}_{i\in\set{n}})$}{
-\sendbroadcast(C_k, \pi_k) \\
+\broadcast(C_k, \pi_k) \\
 }
 \end{pcvstack}
 \begin{pcvstack}
@@ -96,7 +96,7 @@ C_k \gets (A_0, \ldots, A_{\tcor})\\
 % \quad \pk_i \gets \prod_{j=1}^n \prod_{\ell=0}^{t-1} C_j[\ell]^{i^\ell}  \\
 \sk_k \gets \sum_{i=1}^n f_i(k) \\
 \pk \gets \prod_{i=1}^n C_i[0] \\
-\color{red} \sendbroadcast(\success, \sid)\\
+\color{red} \broadcast(\success, \sid)\\
 }
 \procedure{$\KeyGen_5(\{(\successi, \sid_i)\}_{i\in\set{n}})$}{
 \color{red} \pcfor i \in \set{n}, i \neq k \\
@@ -106,7 +106,7 @@ C_k \gets (A_0, \ldots, A_{\tcor})\\
 \end{pcvstack}
 \end{pchstack}
 \caption{The five-round DKG $\pedpopcomm$.
-See Section~\ref{sec:comm-model} for definitions of $\send$ and $\sendbroadcast$.}
+See Section~\ref{sec:comm-model} for definitions of $\send$ and $\broadcast$.}
 \label{fig:pedpopplus}
 \end{figure}
 
@@ -122,7 +122,7 @@ See Section~\ref{sec:comm-model} for definitions of $\send$ and $\sendbroadcast$
 \fbox{$I \gets \set{n} \cap \oldsigners$}\\
 \fbox{$\require \oldt \leq \left\lvert I\right\lvert$}\\
 \sid_i \rgets \zo^\lambda \\
-\sendbroadcast(\sid_i) \\
+\broadcast(\sid_i) \\
 }
 \procedure{$\KeyGen_1(\sid_1, \ldots, \sid_n)$}{
 \sid \gets \Hash_1(\sid_1, \ldots, \sid_n) \\
@@ -142,7 +142,7 @@ h_k \gets \HashCom(\sid, k, C_k) \\
 \quad \send(i, h_k) \\
 }
 \procedure{$\KeyGen_2(\{h_i\}_{i\in\set{n}})$}{
-\sendbroadcast(C_k, \pi_k) \\
+\broadcast(C_k, \pi_k) \\
 }
 \end{pcvstack}
 \begin{pcvstack}
@@ -163,7 +163,7 @@ h_k \gets \HashCom(\sid, k, C_k) \\
 \sk_k \gets \sum_{i=1}^n f_i(k) \\
 \pk \gets \prod_{i=1}^n C_i[0] \\
 \fbox{$\require \pk = \oldpk$} \\
-\sendbroadcast(\success, \sid)\\
+\broadcast(\success, \sid)\\
 }
 \procedure{$\KeyGen_5(\{(\successi, \sid_i)\}_{i\in\set{n}})$}{
 \pcfor i \in \set{n}, i \neq k \\
@@ -174,6 +174,6 @@ h_k \gets \HashCom(\sid, k, C_k) \\
 \end{pchstack}
 \caption{The five-round Resharing Scheme Based on $\pedpopcomm$.
 Differences with the DKG protocol $\pedpopcomm$ are highlighted in a box.
-See Section~\ref{sec:comm-model} for definitions of $\send$ and $\sendbroadcast$.}
+See Section~\ref{sec:comm-model} for definitions of $\send$ and $\broadcast$.}
 \label{fig:pedpopplus-reshare}
 \end{figure}

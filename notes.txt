@@ -1,0 +1,36 @@
+
+define send
+write Shamir secret comment in front of code
+care the typo in NIZK with hat
+care the hash function with little h
+H2 needs to be Hcom
+the order of hashed elements in H2 does not match the order in Hcom
+we use a reliable broadcast that could be implemented with the book instanciation.
+
+/!\ Wichtig~~
+The lastround of broadcasting the success should not happen as there is always a way to timeout one person but the others agree on keys.
+This step should happen  on chain, everybody post success on chain and only then we can do a timeout per epoch (i.e. after 3 blocks
+of voting if we do not see all success then we abort)
+
+We assume parties respond within some period (no assumption of timeouts) for the paper
+
+The proof should say it's a synchronous broadcast. Our implmenetation uses asynch broadcast and at the last round we post on chain the success with the public timeout
+based on epoch number.
+
+Check https://eprint.iacr.org/2002/040.pdf on page 15
+A remark on synchronous versus asynchronous networks. As we have mentioned above,
+most of the results of this paper are presented in the synchronous network model. However, this
+is for the sake of simplicity only. In fact, when output delivery is not guaranteed, asynchronous
+communication does not present any additional hardship. Specifically, the honest parties should
+merely wait until receiving all round i messages before sending their message for round i + 1.
+This ensures that the only difference between a synchronous and an asynchronous execution is the
+ability of the adversary to prevent the parties from receiving output. When output delivery is not
+guaranteed, this is anyway allowed
+
+Assume the proof uses synchrounous channels
+Add this as a note:
+In reality it is asynchrounous. and we do the following.
+Change last sendbroadcast with success and round keygen5 and replace last sendbroadcast with terminating reliable broadcast.
+Timeout is a failure event. On failure propose abort. On success in round 5  propose success tpt the instance of terminating reliable broadcast.
+When the instance of BA decides terminate with keys. 
+[discuss with Matej]

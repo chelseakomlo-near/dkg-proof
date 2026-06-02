@@ -78,18 +78,27 @@ We also assume a synchronous model of communication;
 which means we require that protocol execution progresses in well-defined rounds, with every message sent in a given round being delivered before the start of the subsequent round.
 We assume that the adversary can be rushing, meaning that in any given Round~$r$ the corrupted parties can receive all messages sent by the honest parties in Round~$r$ before the corrupted parties are required to send their Round-$r$ messages.
 
+\paragraph{Peer-to-Peer Channels}
+A peer-to-peer channel allows a party to send a message to one specific other party
+over a secure point-to-point link, with the guarantee of authenticity and confidentiality:
+the recipient is assured of the sender's identity and the integrity of the message,
+and no other party can read or tamper with its contents.
+We denote sending a message to a single party over such a channel with $\send$.
+Unlike a broadcast, a $\send$ targets one designated recipient and carries no guarantee
+that any other party receives the same (or any) message.
+
 \paragraph{Broadcast Channels}
 A broadcast channel sends one message to all other players,
 with the guarantee that all players received the same message.
-A broadcast channel guarantees the properties of authenticity, reliability, and consistency.
-We denote sending over a broadcast channel with $\sendbroadcast$. Note that on the MPC level,
+For our DKG construction we rely on a \emph{reliable} broadcast channel, which
+guarantees the properties of Validity, No duplication, Integrity and Totality
+(see Module 3.11 and Module 3.12 of~\cite{CGR11}).
+We denote sending over a broadcast channel with $\broadcast$. Note that on the MPC level,
 these channels are equipped with timeouts.
 
-Concretely,
-we instantiate $\sendbroadcast$ with the ``Authenticated Double-Echo Broadcast'' protocol
-from~\cite{CGR11} in order to achieve Byzantine reliable broadcast. A reliable broadcast
-channel specifically guarantees the properties of Validity, No duplication, Integrity
-and totality (see Module 3.11 and Module 3.12 of~\cite{CGR11}).
+We instantiate this reliable broadcast following the book of Cachin, Guerraoui and
+Rodrigues~\cite{CGR11}; concretely, we use their ``Authenticated Double-Echo Broadcast''
+protocol (Algorithm 3.18 of~\cite{CGR11}) to achieve Byzantine reliable broadcast.
 The file \textit{echo\_broadcast.rs} contains the implementation of the reliable broadcast protocol.
 We essentially follow the same algorithm 3.18 of~\cite{CGR11} with three mild differences:
 \begin{enumerate}
