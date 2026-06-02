@@ -74,9 +74,12 @@ we assume each pair of parties can communicate over a secure channel.
 We introduce below two types of secure channels that we rely upon for our DKG construction.
 
 
-We also assume a synchronous model of communication;
-which means we require that protocol execution progresses in well-defined rounds, with every message sent in a given round being delivered before the start of the subsequent round.
+All our results are presented in the synchronous network model.
+Concretely, we require that protocol execution progresses in well-defined rounds, with every message sent in a given round being delivered before the start of the subsequent round.
 We assume that the adversary can be rushing, meaning that in any given Round~$r$ the corrupted parties can receive all messages sent by the honest parties in Round~$r$ before the corrupted parties are required to send their Round-$r$ messages.
+
+\medskip
+\noindent\emph{Note.} In practice, we adopt Goldwasser and Lindell's statement~\cite{GoldwasserLindell02}: ``when output delivery is not guaranteed, asynchronous communication does not present any additional hardship. Specifically, the honest parties should merely wait until receiving all round $i$ messages before sending their message for round $i+1$. This ensures that the only difference between a synchronous and an asynchronous execution is the ability of the adversary to prevent the parties from receiving output. When output delivery is not guaranteed, this is anyway allowed.''
 
 \paragraph{Peer-to-Peer Channels}
 A peer-to-peer channel allows a party to send a message to one specific other party
