@@ -113,6 +113,32 @@ protocol allows.
 the collected votes, then it immediately aborts instead of waiting for timeouts to abort the process.
 \end{enumerate}
 
+\paragraph{Terminating Reliable Broadcast}
+In the final round of our protocol we rely on a stronger primitive, namely a
+\emph{terminating reliable broadcast} (TRB), which we denote by $\TRB$.
+On top of the guarantees of reliable broadcast, a terminating reliable broadcast additionally
+ensures \emph{Termination}: every correct party eventually delivers exactly one value, even
+when the sender is faulty. Concretely, $\TRB$ satisfies
+\begin{itemize}
+\item \emph{Validity}: if a correct sender broadcasts a value $m$, then every correct party eventually delivers $m$;
+\item \emph{Integrity}: every correct party delivers at most one value, and if it delivers $m \neq \bot$ then $m$ was broadcast by the sender;
+\item \emph{Agreement}: if some correct party delivers $m$, then every correct party eventually delivers $m$;
+\item \emph{Termination}: every correct party eventually delivers some value, possibly the distinguished symbol $\bot$ indicating a faulty (or timed-out) sender.
+\end{itemize}
+The Termination property is precisely what lets the protocol make progress under asynchrony:
+a party that never receives an expected message simply times out, and the timeout is treated
+as a failure event so that the corresponding $\TRB$ instance delivers $\bot$ rather than blocking.
+We use $\TRB$ to reach agreement on whether key generation succeeded: each party
+$\propose$s either $(\success, \sid)$ or $\abort$, and the parties terminate on the common value
+that the instance $\decide$s, outputting the keys on $(\success, \sid)$ and aborting otherwise.
+
+In practice, this terminating reliable broadcast can be implemented on top of a blockchain:
+each party posts its value on chain, and the parties wait for a fixed number of epochs.
+The blockchain provides agreement and persistence on the posted values, while the fixed
+epoch window plays the role of the timeout---a party whose value is not on chain within that
+window is treated as faulty, so the instance terminates and decides $\abort$ rather than
+blocking indefinitely.
+
 \subsection{Distributed Key Generation}
 \label{def:dgk}
 

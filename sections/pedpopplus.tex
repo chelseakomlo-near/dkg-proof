@@ -96,11 +96,11 @@ C_k \gets (A_0, \ldots, A_{\tcor})\\
 % \quad \pk_i \gets \prod_{j=1}^n \prod_{\ell=0}^{t-1} C_j[\ell]^{i^\ell}  \\
 \sk_k \gets \sum_{i=1}^n f_i(k) \\
 \pk \gets \prod_{i=1}^n C_i[0] \\
-\color{red} \broadcast(\success, \sid)\\
+\color{red} \TRB.\propose(\success, \sid) \pccomment{on a timeout (failure), propose $\abort$ instead}\\
 }
-\procedure{$\KeyGen_5(\{(\successi, \sid_i)\}_{i\in\set{n}})$}{
-\color{red} \pcfor i \in \set{n}, i \neq k \\
-\color{red} \quad \require (\successi, \sid_i) = (\success, \sid) \\
+\procedure{$\KeyGen_5()$}{
+\color{red} b \gets \TRB.\decide() \\
+\color{red} \require b = (\success, \sid) \\
 \pcreturn (\pk, \sk_k) \\
 }
 \end{pcvstack}
@@ -163,11 +163,11 @@ h_k \gets \HashCom(\sid, k, C_k) \\
 \sk_k \gets \sum_{i=1}^n f_i(k) \\
 \pk \gets \prod_{i=1}^n C_i[0] \\
 \fbox{$\require \pk = \oldpk$} \\
-\broadcast(\success, \sid)\\
+\TRB.\propose(\success, \sid) \pccomment{on a timeout (failure), propose $\abort$ instead}\\
 }
-\procedure{$\KeyGen_5(\{(\successi, \sid_i)\}_{i\in\set{n}})$}{
-\pcfor i \in \set{n}, i \neq k \\
-\quad \require (\successi, \sid_i) = (\success, \sid) \\
+\procedure{$\KeyGen_5()$}{
+b \gets \TRB.\decide() \\
+\require b = (\success, \sid) \\
 \pcreturn (\pk, \sk_k) \\
 }
 \end{pcvstack}
