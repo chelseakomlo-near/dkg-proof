@@ -159,14 +159,15 @@ C_{\simid}[0] \gets \dkgchal \cdot
       \item Perform the checks as required by Round 4 for every $i\in\honest$.
       \item Skip computing the key pair.
       \item If any check fails then abort the protocol.
-      \item Otherwise, for every $i\in\honest$, propose $(\success, \sid)$ to the
-        terminating reliable broadcast instance $\TRB$. (On a timeout, which is treated
-        as a failure event, $\SIM$ proposes $\abort$ on behalf of that party instead.)
+      \item Otherwise, for every $i\in\honest$, broadcast $(\success, \sid)$ on that party's
+        terminating reliable broadcast instance $\TRB$. (A faulty or timed-out sender's
+        instance delivers $\bot$ to every party.)
     \end{itemize}
 
     \paragraph{\bf Round 5.}
-    To simulate Round~5, $\SIM$ obtains the decision $b \gets \TRB.\decide()$ of the
-    terminating reliable broadcast instance. If $b = (\success, \sid)$, then $\SIM$ instructs
-    $\FDKGAbort$ to deliver the output keys; otherwise $\SIM$ instructs $\FDKGAbort$ to abort.
+    To simulate Round~5, $\SIM$ obtains the $n$ delivered values $\{b_i\}_{i\in\set{n}}$ of the
+    terminating reliable broadcast instances. If $b_i = (\success, \sid)$ for every $i\in\set{n}$, then $\SIM$
+    instructs $\FDKGAbort$ to deliver the output keys; otherwise (some $b_i = \bot$) $\SIM$ instructs
+    $\FDKGAbort$ to abort.
 
 \end{proof}

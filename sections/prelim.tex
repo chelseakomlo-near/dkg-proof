@@ -83,19 +83,20 @@ We assume that the adversary can be rushing, meaning that in any given Round~$r$
 
 \paragraph{Peer-to-Peer Channels}
 A peer-to-peer channel allows a party to send a message to one specific other party
-over a secure point-to-point link, with the guarantee of authenticity and confidentiality:
+over a secure point-to-point link, with the guarantee of authenticity, confidentiality,
+and termination\footnote{If the sender is faulty, the receiver obtains a special $\bot$ value that is treated as an abort.}:
 the recipient is assured of the sender's identity and the integrity of the message,
 and no other party can read or tamper with its contents.
 We denote sending a message to a single party over such a channel with $\send$.
-Unlike a broadcast, a $\send$ targets one designated recipient and carries no guarantee
-that any other party receives the same (or any) message.
 
 \paragraph{Broadcast Channels}
 A broadcast channel sends one message to all other players,
 with the guarantee that all players received the same message.
-For our DKG construction we rely on a \emph{reliable} broadcast channel, which
+For our DKG construction we rely on a \emph{terminating} and \emph{reliable} broadcast channel, which
 guarantees the properties of Validity, No duplication, Integrity and Totality
-(see Module 3.11 and Module 3.12 of~\cite{CGR11}).
+(see Module 3.11 and Module 3.12 of~\cite{CGR11}), together with \emph{Termination}: every correct
+party eventually delivers some value, possibly the special symbol $\bot$ indicating a faulty or
+timed-out sender, which is treated as an abort.
 We denote sending over a broadcast channel with $\broadcast$. Note that on the MPC level,
 these channels are equipped with timeouts.
 
@@ -114,11 +115,10 @@ the collected votes, then it immediately aborts instead of waiting for timeouts 
 \end{enumerate}
 
 \paragraph{Terminating Reliable Broadcast}
-In the final round of our protocol we rely on a stronger primitive, namely a
-\emph{terminating reliable broadcast} (TRB), which we denote by $\TRB$.
-On top of the guarantees of reliable broadcast, a terminating reliable broadcast additionally
-ensures \emph{Termination}: every correct party eventually delivers exactly one value, even
-when the sender is faulty. Concretely, $\TRB$ satisfies
+In the final round of our protocol we name the terminating reliable broadcast channel above
+explicitly as a \emph{terminating reliable broadcast} (TRB), which we denote by $\TRB$, and
+additionally require it to provide \emph{Agreement}, so that all correct parties deliver the
+same value. Concretely, $\TRB$ satisfies
 \begin{itemize}
 \item \emph{Validity}: if a correct sender broadcasts a value $m$, then every correct party eventually delivers $m$;
 \item \emph{Integrity}: every correct party delivers at most one value, and if it delivers $m \neq \bot$ then $m$ was broadcast by the sender;
@@ -128,16 +128,24 @@ when the sender is faulty. Concretely, $\TRB$ satisfies
 The Termination property is precisely what lets the protocol make progress under asynchrony:
 a party that never receives an expected message simply times out, and the timeout is treated
 as a failure event so that the corresponding $\TRB$ instance delivers $\bot$ rather than blocking.
-We use $\TRB$ to reach agreement on whether key generation succeeded: each party
-$\propose$s either $(\success, \sid)$ or $\abort$, and the parties terminate on the common value
-that the instance $\decide$s, outputting the keys on $(\success, \sid)$ and aborting otherwise.
+We use $\TRB$ to agree on whether key generation succeeded: each party broadcasts
+$(\success, \sid)$ on its own $\TRB$ instance, so that every party receives $n$ delivered values, one
+per sender. By Termination, each delivered value is either $(\success, \sid)$ or the distinguished
+symbol $\bot$ (indicating a faulty or timed-out sender). A party outputs its keys only if all
+$n$ delivered values equal $(\success, \sid)$, and aborts otherwise.
 
-In practice, this terminating reliable broadcast can be implemented on top of a blockchain:
-each party posts its value on chain, and the parties wait for a fixed number of epochs.
-The blockchain provides agreement and persistence on the posted values, while the fixed
-epoch window plays the role of the timeout---a party whose value is not on chain within that
-window is treated as faulty, so the instance terminates and decides $\abort$ rather than
-blocking indefinitely.
+\paragraph{Optimizations}
+The description above assumes idealized synchronous channels that terminate within each round.
+In a real deployment the network is asynchronous and a broadcast may fail to terminate on its own;
+we then proceed as follows. For the intermediate rounds, honest parties simply wait until they have
+received all round-$i$ messages before sending their round-$(i+1)$ messages, so that the only
+additional power the adversary gains is to withhold output, which is anyway allowed when output
+delivery is not guaranteed~\cite{GoldwasserLindell02}. For the final success broadcast we obtain
+termination from a blockchain: each party posts its value $(\success, \sid)$ on chain, and the parties
+wait for a fixed number of epochs. The blockchain provides agreement and persistence on the posted
+values, while the fixed epoch window plays the role of the timeout---a party whose value is not on
+chain within that window is treated as faulty, so the instance terminates and delivers $\bot$ rather
+than blocking indefinitely.
 
 \subsection{Distributed Key Generation}
 \label{def:dgk}

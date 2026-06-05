@@ -34,3 +34,16 @@ Change last sendbroadcast with success and round keygen5 and replace last sendbr
 Timeout is a failure event. On failure propose abort. On success in round 5  propose success tpt the instance of terminating reliable broadcast.
 When the instance of BA decides terminate with keys. 
 [discuss with Matej]
+
+
+--------------
+
+At the end of keygen4 every process broadcasts using the instance of TRB success.
+In keygen 5 collect all the success (wait) the value and check if there exists a bot then abort
+trbc.abort[sid](success)
+
+say the broadcast channel is terminating and reliable
+add a section optimizations: say what you do if does not terminate.
+add in peer to peer (with the guarantee of termination). and delete last sentence. footnote to it (if the sender is faulty the receiver would get a special bot value that would be treated as abort).
+
+
