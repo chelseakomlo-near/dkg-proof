@@ -15,6 +15,15 @@ When writing protocols,
 $\require$ denotes the clause that if some predicate~$\cdot$ does not hold,
 then the respective party must abort the protocol.
 
+\paragraph{Hash Functions.}
+Our construction uses three hash functions, modeled as random oracles in the security proof:
+$\HashSid \colon (\zo^\lambda)^n \to \zo^\lambda$, used to derive the joint session identifier from the
+parties' contributions;
+$\HashCom \colon \zo^* \to \Zq$, used to commit to a party's coefficient-commitment vector; and
+$\HashSchnorrR \colon \zo^* \to \Zq$, the Fiat--Shamir challenge hash of the proof system.
+The codomains of $\HashCom$ and $\HashSchnorrR$ are the scalar field $\Zq$
+(the output of $\HashSchnorrR$ is used as an exponent).
+
 \subsection{Polynomial Interpolation and Shamir Secret Sharing}
 \label{prelim:secret-sharing}
 
@@ -41,7 +50,7 @@ Shamir secret sharing~\cite{Shamir79} is an $(n, \thresh)$-threshold secret shar
 \begin{itemize}[itemsep=1mm]
     \item $\IssueShares(\secret, n, \thresh) \rightarrow \{ (1, \share_1), \ldots, (n, \share_n)\}$:
       On input a secret $\secret$, number of participants $n$, and threshold $\thresh$, perform the following.
-First, define a polynomial $f(Z) = x + a_1 Z + a_2 Z^2 + \cdots + a_{\tcor} Z^{\tcor}$ with $a_1, \ldots, a_{\tcor} \randpick \Z_p$.
+First, define a polynomial $f(Z) = x + a_1 Z + a_2 Z^2 + \cdots + a_{\tcor} Z^{\tcor}$ with $a_1, \ldots, a_{\tcor} \randpick \Zq$.
 Then, set each participant's share $\share_i, i \in \set{n}$, to be the evaluation of $f(i)$:
     \[
         \share_i \gets \secret + \sum_{j \in \set{\tcor}} a_j i^j
@@ -152,7 +161,7 @@ than blocking indefinitely.
 
 We follow the definition and idealized notion of security $\FDKGAbort$
 for a distributed key generation (DKG) protocol where the adversary is allowed to bias the output key with some (constrained) additive  shift $\Delta$,
-as presented by Katz~\cite{Katz23}.
+as presented by Kate et al.~\cite{KMSSSY26}.
 We give a stand-alone definition of security for $\FDKGAbort$.
 Because our proof for $\pedpopcomm$ uses only online straight-line simulation,
 our proof with respect to $\FDKGAbort$ in the standalone setting is also by extension secure in the Universal Composability (UC) framework~\cite{KushilevitzLR10}.
@@ -166,17 +175,17 @@ We assume an adversary that performs only static corruptions.
       \begin{enumerate}
         \item Let $n, t$ be parameters provided to $\FDKGAbort$.
         \item Send $(n, t)$ to the adversary $\adv$; receive $\corrupt$ from $\adv$.
-        \item Let $f$ be a degree $t$ polynomial randomly sampled from $\Zq$.
+        \item Let $f$ be a degree $\tcor$ polynomial whose coefficients are sampled uniformly at random from $\Zq$.
         \item Compute $\secretComm \gets g^{f(0)}$
         \item Compute $(\SK_i,\PK_i) \gets (f(i), g^{f(i)})$ for all $i \in \set{n}$.
         \item Send $(\secretComm, \set{\PK_i}_{i\in\set{n}}, \set{\SK_i}_{i\in\set{\corrupt}})$ to the adversary $\adv$
         \item Receive $(\abort, p(\cdot))$ from $\adv$.
-        \item If $\abort = 1$ or $\deg(p) > t$:
+        \item If $\abort = 1$ or $\deg(p) > \tcor$:
         \item \qquad  Send $\bot$ to all parties.
         \item Otherwise:
         \item \qquad Set $\PK' \gets \secretComm \cdot g^{p(0)}$
-        \item \qquad Set $\SK_i' \gets \SK_i + p(i)$ and  $\PK_i' \gets \PK_i\cdot g^{p(i)} $ for all $i \in \set{n}$.
-        \item Send $(\PK', \{ \PK_i' \}_{i \in \set{n}}, \SK_i')$ to each party $i \in \set{n}$
+        \item \qquad Set $\SK_i' \gets \SK_i + p(i)$ for all $i \in \set{n}$.
+        \item Send $(\PK', \SK_i')$ to each party $i \in \set{n}$
       \end{enumerate}
     \end{center}
   \end{framed}
@@ -207,16 +216,16 @@ For which we define the following ideal functionality we are trying to achieve
 \textbf{Setup:} On input $\delta$, where $\delta$ is some constant indicating a timeout, initialize the functionality by performing the following steps:
 \begin{enumerate}
     \item Initialize $Q_K^{(1)} \leftarrow \emptyset$, $Q_K^{(2)} \leftarrow \emptyset$.
-    \item Generate public parameters $(E(\mathbb{F}_p), p, G, s, g) \leftarrow \textsf{GroupGen}(1^\lambda)$.
+    \item Generate public parameters $(E(\mathbb{F}_p), p, G, q, g) \leftarrow \textsf{GroupGen}(1^\lambda)$.
     \item Sample $h \xleftarrow{\$} G$.
-    \item Set $\textsf{par} \leftarrow (E(\mathbb{F}_p), p, G, s, g, h)$.
+    \item Set $\textsf{par} \leftarrow (E(\mathbb{F}_p), p, G, q, g, h)$.
 \end{enumerate}
 
 \textbf{KeyGen:} On query with input identifier $i'$ from party $i$.
 \begin{enumerate}
     \item Output $\bot$ if $i'\neq i$.
     \item Output $\bot$ if $Q_K^{(1)}[i] \neq \bot$.
-    \item Else, generate $\textsf{sk} \xleftarrow{\$} \mathbb{Z}_s$ and $\textsf{PK} \leftarrow g^{\textsf{sk}}$.
+    \item Else, generate $\textsf{sk} \xleftarrow{\$} \Zq$ and $\textsf{PK} \leftarrow g^{\textsf{sk}}$.
     \item Set $Q_K^{(1)}[i] \leftarrow \textsf{PK}$.
     \item Output $(\textsf{sk}, \textsf{PK})$.
 \end{enumerate}
@@ -243,6 +252,7 @@ B = \{(j, \textsf{PK}_j)\}_{j \in C}, \text{ where } C \subseteq [n].
 }
 }
 \caption{Ideal functionality $\mathcal{F}^{\pk}_{zk}$ for a public-key infrastructure with proof of possession of the corresponding secret key $\textsf{sk}$. Public parameters $\textsf{par}$ are given implicitly to all algorithms.}
+\label{fg:ideal-pki}
 \end{figure}
 
 
@@ -250,6 +260,12 @@ B = \{(j, \textsf{PK}_j)\}_{j \in C}, \text{ where } C \subseteq [n].
 
 Proving the security of our protocol requires realizing $\mathcal{F}^{\pk}_{zk}$ which in our case requires
 an online-extractable zero-knowledge proof system (in the UC framework rewinding is not allowed).
+
+\simon{TODO: the DKG protocol never invokes the $\mathsf{KeyGen}/\Register/\Query$ interface of
+$\mathcal{F}^{\pk}_{zk}$ nor its timeout $\delta$; the proof uses the NIZK inline via $\Prove/\Verify$.
+Either state the NIZK assumption directly (a straight-line/online-extractable ZK NIZK for $\mathcal{R}_P$ in
+the programmable ROM) or show explicitly how the inline $\Prove/\Verify$ realizes $\mathcal{F}^{\pk}_{zk}$,
+and where $\delta$ matters.}
 
 One possible direction is to use zero-knowledge proofs described in \cite{GOLDEN}.
 The following concrete relation, $\mathcal{R}_P$,
@@ -299,13 +315,13 @@ where the proof $\pi$ is practically implemented using Schnorr proofs.
 \item \textbf{Setup:} Accepts as input public parameters $\mathsf{par}$, and a timeout constant $\delta$.
 \begin{enumerate}
     \item Initialize $Q_K^{(1)} \leftarrow \emptyset$, $Q_K^{(2)} \leftarrow \emptyset$.
-    \item Generate public parameters $(\mathbb{F}_p, p, G, s, g) \leftarrow \mathsf{GroupGen}(1^\lambda)$.
+    \item Generate public parameters $(E(\mathbb{F}_p), p, G, q, g) \leftarrow \mathsf{GroupGen}(1^\lambda)$.
     \item Sample $h \leftarrow_{\$} G$.
-    \item Set $\mathsf{par} \leftarrow (\mathbb{F}_p, p, G, s, g, h)$.
+    \item Set $\mathsf{par} \leftarrow (E(\mathbb{F}_p), p, G, q, g, h)$.
 \end{enumerate}
 
 \item \textbf{KeyGen:} If $Q_K^{(1)}[i] \neq \bot$, return $\bot$.
-Else, sample $\mathsf{sk} \leftarrow_{\$} \mathbb{Z}_s$, set $\mathsf{PK} \leftarrow g^{\mathsf{sk}}$.
+Else, sample $\mathsf{sk} \leftarrow_{\$} \Zq$, set $\mathsf{PK} \leftarrow g^{\mathsf{sk}}$.
 Set $Q_K^{(1)}[i] = \mathsf{PK}$. Output $(\mathsf{PK}, \mathsf{sk})$.
 
 \item \textbf{Register:} Accepts as input public key $\mathsf{PK}$, identifier $i'$ from party $i$, and proof $\pi$.
@@ -341,6 +357,13 @@ The challenge $c'$ is not part of the proof: the verifier recomputes it directly
 \]
 binding the ciphertext $(C_0, C_1)$, the statement $\PK$, and the proof context $\gamma$; the honest prover
 sends the single response $z = r + c' \cdot \sk$.
+
+\simon{TODO: the verification algorithm $\Verify(\pi, \PK)$ is not written out, and equation~(3) as stated
+contains the witness $\sk$ (via $h^{\sk}$), which a verifier cannot compute. Specify $\Verify$ explicitly:
+parse $\pi = (C_0, C_1, z)$, recompute $c' = \HashSchnorrR(C_0, C_1, \PK, \gamma)$, and accept iff
+eq.~(2) $g^z = C_0 \cdot \PK^{c'}$ holds together with a \emph{verifier-computable} second equation using only
+public group elements (e.g.\ the Chaum--Pedersen equal-discrete-log check on $(g, C_0)$ and
+$(h, C_1 \cdot \PK^{-1})$).}
 
 \begin{enumerate}
 \setcounter{enumi}{3}

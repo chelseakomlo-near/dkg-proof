@@ -4,16 +4,28 @@ We next prove the security of $\pedpopcomm$ with respect to the notion of securi
 
 \begin{theorem}
 \label{thm:keygen-pedpopplus}
-Assume $\NIZKUCExtractable$ is a secure online-extractable zero-knowledge proof for the Schnorr
-relation $\SchnorrR$.
+Assume $\NIZKUCExtractable$ is a secure online-extractable (straight-line extractable) zero-knowledge
+proof for the relation $\mathcal{R}_P$ of Section~\ref{def:online-extractable}.
 Then, for $t \leq n/2$,
 the $\pedpopcomm$ DKG is secure under aborts in the programmable random oracle model,
 and realizes the idealized notion $\FDKGAbort$.
 \end{theorem}
 
+\simon{TODO: the bound $t \leq n/2$ is stated but never used in the proof below. Either replace it with the
+corruption bound the simulator actually needs, $\lvert\corrupt\rvert \leq \tcor$ (see the Lagrange embedding
+in Round~2), or, if honest majority is genuinely required by the underlying Byzantine reliable broadcast
+(Section~\ref{sec:comm-model}), state the $n$--$t$--fault relationship explicitly and reconcile it with the
+protocol's $t \leq n$ requirement.}
+
 \begin{proof}
     To establish the proof of Theorem~\ref{thm:keygen-pedpopplus},
     we define a simulator $\SIM$ that is given black-box access to the static adversary $\adv$.
+
+    \simon{TODO: what follows is a simulator description only. Add the explicit hybrid ladder
+    $\mathsf{Real} = H_0, \ldots, H_m = \mathsf{Ideal}$ with a per-step indistinguishability bound and an
+    aggregate distinguishing advantage, reducing to the ZK/online-extractability of $\mathcal{R}_P$ and the
+    relevant hardness assumption. The single ``statistically indistinguishable within $q_h/q$'' claim below
+    covers only the $\HashSchnorrR$ reprogramming step; the $\dkgchal$ embedding is a computational step.}
 
     \medskip
 
@@ -97,6 +109,10 @@ C_{\simid}[0] \gets \dkgchal \cdot
         polynomials $L'_0$ and $L'_j$ for the node set $\{ 0\}\cup\corrupt$ (See Section~\ref{prelim:secret-sharing}).
         This makes $C_\simid[\ell] = g^{a_\ell}$ a commitment to the $\ell$-th \emph{coefficient} $a_\ell$ of $f_\simid$,
         as required by the protocol's commitment vectors and the Round~4 check $g^{f_i(k)} = \prod_{\ell} C_i[\ell]^{k^\ell}$.
+        \simon{TODO: the node set $\{0\}\cup\corrupt$ determines a degree-$\tcor$ polynomial uniquely only when
+        $\lvert\{0\}\cup\corrupt\rvert = t$, i.e.\ $\lvert\corrupt\rvert = \tcor$. State this
+        worst-case-corruption assumption, and for $\lvert\corrupt\rvert < \tcor$ specify how the interpolation
+        set is completed (e.g.\ pad with random shares on honest indices).}
         \item Produce a simulated proof $\pi_\simid$ for the statement $\PK_\simid \coloneqq C_\simid[0]$
           with context $\gamma_\simid \gets (\sid, \simid, C_\simid[0])$.
           Since $C_\simid[0]$ is defined in Equation~\eqref{eq:simid-comm} so as to embed the challenge
@@ -133,6 +149,11 @@ C_{\simid}[0] \gets \dkgchal \cdot
     honest prover, so the adversary's view in this hybrid is statistically indistinguishable
     (within $q_h/q$) from its view in the real protocol.
 
+    \simon{TODO: an analogous reprogramming of $\HashCom$ is also required and currently missing. $\SIM$ fixes
+    $h_\simid$ in Round~1 but only constructs $C_\simid$ in Round~2, so it must reprogram
+    $\HashCom(\sid, \simid, C_\simid) \gets h_\simid$ to pass the Round~3 opening check, with its own bad event
+    (``$\adv$ already queried that point'') bounded by $q_{\HashCom}/q$.}
+
     \paragraph{\bf Round 3.}
     On input $\KeyGen_3(\{C_i, \pi_i\}_{i\in\set{n}})$,
     $\SIM$ does the following:
@@ -144,6 +165,11 @@ C_{\simid}[0] \gets \dkgchal \cdot
           decrypting the verifiable-encryption ciphertext $c_j = (C_{j,0}, C_{j,1})$ contained in $\pi_j$
           using the trapdoor $\eta = \log_g h$: compute $g^{f_j(0)} \gets C_{j,1} \cdot C_{j,0}^{-\eta}$,
           from which $f_j(0)$ is determined. This extraction is straight-line (no rewinding), as required in the UC setting.
+          \simon{TODO: decryption recovers the group element $g^{f_j(0)}$, not the scalar $f_j(0)$ (recovering
+          the scalar is discrete log). Clarify what $\SIM$ actually needs: if only group elements, rewrite the
+          downstream use --- including the bias $p(\cdot)$ sent to $\FDKGAbort$, which is a scalar polynomial
+          --- accordingly; otherwise use a verifiable encryption whose extractable plaintext is the scalar
+          witness.}
         \item For party $\simid$, set $f_\simid(j) \gets \share_{\simid,j}$
         (By definition $j \in \corrupt$ is an interpolation node of $f_\simid$;
         we have $f_\simid(j) = \share_{\simid,j}$).
@@ -168,5 +194,10 @@ C_{\simid}[0] \gets \dkgchal \cdot
     terminating reliable broadcast instances. If $b_i = (\success, \sid)$ for every $i\in\set{n}$, then $\SIM$
     instructs $\FDKGAbort$ to deliver the output keys; otherwise (some $b_i = \bot$) $\SIM$ instructs
     $\FDKGAbort$ to abort.
+
+    \simon{TODO: $\FDKGAbort$ expects $(\abort, p(\cdot))$, but $\SIM$ never constructs or sends the bias
+    polynomial $p$. $\SIM$ must derive $p$ from the extracted corrupt contributions so that
+    $\PK' = \dkgchal \cdot g^{p(0)}$ matches the real $\pk = \prod_i C_i[0]$, and send $(\abort, p)$ here. This
+    is the central real/ideal link and is currently absent (see also the scalar-extraction note in Round~3).}
 
 \end{proof}
