@@ -4,7 +4,7 @@ We next prove the security of $\pedpopcomm$ with respect to the notion of securi
 
 \begin{theorem}
 \label{thm:keygen-pedpopplus}
-Assume $\NIZKUCR$ is a secure online-extractable zero-knowledge proof for the Schnorr
+Assume $\NIZKUCExtractable$ is a secure online-extractable zero-knowledge proof for the Schnorr
 relation $\SchnorrR$.
 Then, for $t \leq n/2$,
 the $\pedpopcomm$ DKG is secure under aborts in the programmable random oracle model,
@@ -54,7 +54,7 @@ and realizes the idealized notion $\FDKGAbort$.
     to simulate Round~1 of the DKG,
     $\SIM$ does the following:
     \begin{itemize}
-    \item Derive $\sid$ honestly by querying the random oracle $\Hash_1$ on $\sid_1, \ldots, \sid_n$.
+    \item Derive $\sid$ honestly by querying the random oracle $\HashSid$ on $\sid_1, \ldots, \sid_n$.
     \item  For each honest party $i \in \honest$,
     sample $h_i \rgets \Zq$.
     \item When the adversary queries party $k \in \honest$,
@@ -69,7 +69,7 @@ and realizes the idealized notion $\FDKGAbort$.
     $\SIM$ does the following:
     \begin{itemize}
       \item For each corrupt party $j \in \corrupt$,
-      look up a previously input tuple $(\sid, j, C_j)$ for the output $h_j$ using the random oracle $\Hash_2$.
+      look up a previously input tuple $(\sid, j, C_j)$ for the output $h_j$ using the random oracle $\HashCom$.
       \item If any $h_j$ does not correspond to a valid entry or to the current $\sid$,
       follow the remainder of Round~2 honestly for all honest participants.
       There is no need to simulate as honest parties will abort in a later
@@ -139,8 +139,7 @@ C_{\simid}[0] \gets \dkgchal \cdot
     \begin{itemize}
       \item Perform verification steps honestly;
         if any verification step fails, abort the protocol.
-      \item
-        \item When the adversary queries party $k \in \honest\setminus\{\simid\}$, output $f_k(j)$ extracted from the honest participant.
+      \item When the adversary queries party $k \in \honest\setminus\{\simid\}$, output $f_k(j)$ extracted from the honest participant.
         \item Otherwise, for each corrupt party $j \in \corrupt$, extract its committed contribution by
           decrypting the verifiable-encryption ciphertext $c_j = (C_{j,0}, C_{j,1})$ contained in $\pi_j$
           using the trapdoor $\eta = \log_g h$: compute $g^{f_j(0)} \gets C_{j,1} \cdot C_{j,0}^{-\eta}$,

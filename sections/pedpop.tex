@@ -1,7 +1,7 @@
 \section{$\pedpop$}
 
 In the rest of this document, we denote by $k$ the identifier of the participant running the protocol, by $t$ the signing threshold of the participants, and by
-$n$ the total number of participants. We assume, w.l.o.g.\@ that the participants' identifiers range from $1$ to $n$ and that no two participants have the same identifier. We also assume that the parameters provided to the scheme are coherent, that is, they validate some intuitive set of rules such as \@ $n>2$, $k \in \set{n}$ and $t\leq n$.
+$n$ the total number of participants. We assume, w.l.o.g.\@ that the participants' identifiers range from $1$ to $n$ and that no two participants have the same identifier. We also assume that the parameters provided to the scheme are coherent, that is, they validate some intuitive set of rules such as $n>2$, $k \in \set{n}$ and $t\leq n$.
 
 We depict $\pedpop$ in Figure~\ref{fig:pedpop} and refer the reader to~\cite{EPRINT:KomGol20} for proof details.
 In a nutshell, the protocol runs in two rounds.
@@ -40,9 +40,9 @@ C_k \gets (A_0, \ldots, A_{\tcor}) \\
 \procedure{$\KeyGen_3(\{ f_i(k), (C_i, \pi_i) \}_{i \in \set{n}})$}{
 \pcfor i \in \set{n}, i \neq k \pcdo \\
   \text{\algcom Check proof of knowledge of $\sk$} \\
-  \quad \require \schnorr[\Hash_1].\Verify(C_i[0], \Phi, \pi_i) \neq 1 \\
+  \quad \require \schnorr[\Hash_1].\Verify(C_i[0], \Phi, \pi_i) = 1 \\
   \text{\algcom Check correctness of share} \\
-  \quad \require g^{f_i(k)} \neq \prod_{j=0}^{\tcor} C_i[j]^{k^j} \\
+  \quad \require g^{f_i(k)} = \prod_{j=0}^{\tcor} C_i[j]^{k^j} \\
   \pcfor i \in \set{n} \pcdo \\
   \text{\algcom Derive each participant's public key share}  \\
   \quad \pk_i \gets \prod_{j=1}^n \prod_{\ell=0}^{\tcor} C_j[\ell]^{i^\ell}\\
@@ -53,7 +53,7 @@ C_k \gets (A_0, \ldots, A_{\tcor}) \\
 \end{pcvstack}
 \end{pchstack}
 \caption{The two-round PedPop DKG. The public parameters $\pp$ are given as input to all algorithms and protocols. $\schnorr$ is the single-party Schnorr signature scheme.
-$\Phi$ is a context string that aims to prevent replay attacks. It contains the identifier of the signer, the verification key share
+$\Phi$ is a context string that aims to prevent replay attacks. It contains the identifier of the signer and the verification key share.
 }
 \label{fig:pedpop}
 \end{figure}
