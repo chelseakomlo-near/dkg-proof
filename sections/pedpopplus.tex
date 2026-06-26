@@ -1,6 +1,6 @@
-\section{$\pedpopcomm$}
+\section{$\pedpopplus$}
 
-$\pedpopcomm$ is a modification of $\pedpop$ in which three extra rounds of communications are added.
+$\pedpopplus$ is a modification of $\pedpop$ in which three extra rounds of communications are added.
 This protocol could either be used as a DKG or as a Key Resharing scheme.
 We depict the key generation protocol in Figure~\ref{fig:pedpopplus} and
 key resharing in Figure~\ref{fig:pedpopplus-reshare}.
@@ -24,7 +24,7 @@ In Round 5, each participant collects $n$ success strings,
 else the participant aborts.
 
 \subsection{Key Resharing}\label{sec:key-resharing}
-Key Resharing using $\pedpopcomm$ is similar to key generation,
+Key Resharing using $\pedpopplus$ is similar to key generation,
 with the exception that participants distribute sub-shares of their secret share,
 as opposed to a random value, as is the case for key generation.
 
@@ -102,7 +102,7 @@ C_k \gets (A_0, \ldots, A_{\tcor})\\
 }
 \end{pcvstack}
 \end{pchstack}
-\caption{The five-round DKG $\pedpopcomm$.
+\caption{The five-round DKG $\pedpopplus$.
 See Section~\ref{sec:comm-model} for definitions of $\send$ and $\broadcast$.}
 \label{fig:pedpopplus}
 \end{figure}
@@ -169,8 +169,8 @@ h_k \gets \HashCom(\sid, k, C_k) \\
 }
 \end{pcvstack}
 \end{pchstack}
-\caption{The five-round Resharing Scheme Based on $\pedpopcomm$.
-Differences with the DKG protocol $\pedpopcomm$ are highlighted in a box.
+\caption{The five-round Resharing Scheme Based on $\pedpopplus$.
+Differences with the DKG protocol $\pedpopplus$ are highlighted in a box.
 Hatted quantities ($\oldsk_k$, $\oldpk$, $\oldsigners$, $\oldt$) denote the inputs carried over from the previous (old) key configuration.
 See Section~\ref{sec:comm-model} for definitions of $\send$ and $\broadcast$.}
 \label{fig:pedpopplus-reshare}
