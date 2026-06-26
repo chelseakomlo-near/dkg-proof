@@ -81,7 +81,7 @@ C_k \gets (A_0, \ldots, A_{\tcor})\\
 \begin{pcvstack}
 \procedure{$\KeyGen_3(\{C_i, \pi_i\}_{i\in\set{n}})$}{
 \pcfor j \in \set{n} \\
-\quad f_k(j) \gets \alpha + \sum_{i=1}^{\tcor} a_i j^i \pccomment{Shamir secret sharing, see Section~\ref{prelim:secret-sharing}} \\
+\quad f_k(j) \gets \alpha + \sum_{i=1}^{\tcor} a_i j^i \pccomment{see Sec.~\ref{prelim:secret-sharing}} \\
 \pcfor i \in \set{n}, i \neq k \\
 \color{red} \quad \gamma_i \gets (\sid, k, C_i[0]) \\
 \quad \require \color{red} {\NIZKUCExtractable[\HashSchnorrR]}.\Verify(C_i[0], \gamma_i, \pi_i) \\
@@ -96,11 +96,11 @@ C_k \gets (A_0, \ldots, A_{\tcor})\\
 % \quad \pk_i \gets \prod_{j=1}^n \prod_{\ell=0}^{t-1} C_j[\ell]^{i^\ell}  \\
 \sk_k \gets \sum_{i=1}^n f_i(k) \\
 \pk \gets \prod_{i=1}^n C_i[0] \\
-\color{red} \TRB(\success, \sid) \pccomment{a faulty or timed-out sender's instance delivers $\bot$}\\
+\color{red} \TRB(\success, \sid) \pccomment{$\bot$ if faulty/timed out}\\
 }
 \procedure{$\KeyGen_5(\{b_i\}_{i\in\set{n}})$}{
 \color{red} \pcfor i \in \set{n} \\
-\color{red} \quad \require b_i = (\success, \sid) \pccomment{abort unless every instance delivered $(\success, \sid)$} \\
+\color{red} \quad \require b_i = (\success, \sid) \pccomment{else abort} \\
 \pcreturn (\pk, \sk_k) \\
 }
 \end{pcvstack}
@@ -148,7 +148,7 @@ h_k \gets \HashCom(\sid, k, C_k) \\
 \begin{pcvstack}
 \procedure{$\KeyGen_3(\{C_i, \pi_i\}_{i\in\set{n}})$}{
 \pcfor j \in \set{n} \\
-\quad f_k(j) \gets \alpha + \sum_{i=1}^{\tcor} a_i j^i \pccomment{Shamir secret sharing, see Section~\ref{prelim:secret-sharing}} \\
+\quad f_k(j) \gets \alpha + \sum_{i=1}^{\tcor} a_i j^i \pccomment{see Sec.~\ref{prelim:secret-sharing}} \\
 \pcfor i \in \set{n}, i \neq k \\
 \quad \gamma_i \gets (\sid, k, C_i[0]) \\
 \quad \require \NIZKUCExtractable[\HashSchnorrR].\Verify(C_i[0], \gamma_i, \pi_i) \\
@@ -163,11 +163,11 @@ h_k \gets \HashCom(\sid, k, C_k) \\
 \sk_k \gets \sum_{i=1}^n f_i(k) \\
 \pk \gets \prod_{i=1}^n C_i[0] \\
 \fbox{$\require \pk = \oldpk$} \\
-\TRB(\success, \sid) \pccomment{a faulty or timed-out sender's instance delivers $\bot$}\\
+\TRB(\success, \sid) \pccomment{$\bot$ if faulty/timed out}\\
 }
 \procedure{$\KeyGen_5(\{b_i\}_{i\in\set{n}})$}{
 \pcfor i \in \set{n} \\
-\quad \require b_i = (\success, \sid) \pccomment{abort unless every instance delivered $(\success, \sid)$} \\
+\quad \require b_i = (\success, \sid) \pccomment{else abort} \\
 \pcreturn (\pk, \sk_k) \\
 }
 \end{pcvstack}
