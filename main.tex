@@ -118,24 +118,24 @@
 	%{\let\addcontentsline\relax}
 	\maketitle
 
-	\begin{abstract}
-
-    We present $\pedpopplus$, a discrete-logarithm distributed key generation (DKG)
-    protocol that augments the two-round $\pedpop$ protocol of Komlo and Goldberg with
-    three additional rounds of communication. $\pedpopplus$ achieves simulatability with aborts: we prove
-    that it realizes an ideal key-generation functionality in which a malicious adversary
-    can only abort the protocol or apply a constrained additive shift to the output key,
-    in the programmable random-oracle model and for any corruption threshold $t \le n/2$.
-    The core technical ingredient is an online-extractable (straight-line) non-interactive
-    zero-knowledge proof of knowledge built from verifiable encryption; because witness
-    extraction requires no rewinding, our stand-alone simulation extends to the universally
-    composable setting. The same machinery additionally supports proactive key resharing
-    and the admission of new participants, preserving the existing public key while allowing
-    the reconstruction threshold to change. Finally, while our analysis assumes synchronous,
-    terminating reliable broadcast, we describe a practical asynchronous deployment in which
-    parties post completion on-chain and rely on an epoch-based timeout.
-
-  \end{abstract}
+% 	\begin{abstract}
+% 
+%     We present $\pedpopplus$, a discrete-logarithm distributed key generation (DKG)
+%     protocol that augments the two-round $\pedpop$ protocol of Komlo and Goldberg with
+%     three additional rounds of communication. $\pedpopplus$ achieves simulatability with aborts: we prove
+%     that it realizes an ideal key-generation functionality in which a malicious adversary
+%     can only abort the protocol or apply a constrained additive shift to the output key,
+%     in the programmable random-oracle model.
+%     The core technical ingredient is an online-extractable (straight-line) non-interactive
+%     zero-knowledge proof of knowledge built from verifiable encryption; because witness
+%     extraction requires no rewinding, our stand-alone simulation extends to the universally
+%     composable setting. The same machinery additionally supports proactive key resharing
+%     and the admission of new participants, preserving the existing public key while allowing
+%     the reconstruction threshold to change. Finally, while our analysis assumes synchronous,
+%     terminating reliable broadcast, we describe a practical asynchronous deployment in which
+%     parties post completion on-chain and rely on an epoch-based timeout.
+% 
+%   \end{abstract}
 
   \def\addcontentsline#1#2#3{\oldaddcontentsline{#1}{#2}{#3}}
 	\onehalfspacing

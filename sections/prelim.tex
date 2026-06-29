@@ -261,11 +261,11 @@ B = \{(j, \textsf{PK}_j)\}_{j \in C}, \text{ where } C \subseteq [n].
 Proving the security of our protocol requires realizing $\mathcal{F}^{\pk}_{zk}$ which in our case requires
 an online-extractable zero-knowledge proof system (in the UC framework rewinding is not allowed).
 
-\simon{TODO: the DKG protocol never invokes the $\mathsf{KeyGen}/\Register/\Query$ interface of
-$\mathcal{F}^{\pk}_{zk}$ nor its timeout $\delta$; the proof uses the NIZK inline via $\Prove/\Verify$.
-Either state the NIZK assumption directly (a straight-line/online-extractable ZK NIZK for $\mathcal{R}_P$ in
-the programmable ROM) or show explicitly how the inline $\Prove/\Verify$ realizes $\mathcal{F}^{\pk}_{zk}$,
-and where $\delta$ matters.}
+% \simon{TODO: the DKG protocol never invokes the $\mathsf{KeyGen}/\Register/\Query$ interface of
+% $\mathcal{F}^{\pk}_{zk}$ nor its timeout $\delta$; the proof uses the NIZK inline via $\Prove/\Verify$.
+% Either state the NIZK assumption directly (a straight-line/online-extractable ZK NIZK for $\mathcal{R}_P$ in
+% the programmable ROM) or show explicitly how the inline $\Prove/\Verify$ realizes $\mathcal{F}^{\pk}_{zk}$,
+% and where $\delta$ matters.}
 
 One possible direction is to use zero-knowledge proofs described in \cite{BCK25}.
 The following concrete relation, $\mathcal{R}_P$,
@@ -358,12 +358,12 @@ The challenge $c'$ is not part of the proof: the verifier recomputes it directly
 binding the ciphertext $(C_0, C_1)$, the statement $\PK$, and the proof context $\gamma$; the honest prover
 sends the single response $z = r + c' \cdot \sk$.
 
-\simon{TODO: the verification algorithm $\Verify(\pi, \PK)$ is not written out, and equation~(3) as stated
-contains the witness $\sk$ (via $h^{\sk}$), which a verifier cannot compute. Specify $\Verify$ explicitly:
-parse $\pi = (C_0, C_1, z)$, recompute $c' = \HashSchnorrR(C_0, C_1, \PK, \gamma)$, and accept iff
-eq.~(2) $g^z = C_0 \cdot \PK^{c'}$ holds together with a \emph{verifier-computable} second equation using only
-public group elements (e.g.\ the Chaum--Pedersen equal-discrete-log check on $(g, C_0)$ and
-$(h, C_1 \cdot \PK^{-1})$).}
+% \simon{TODO: the verification algorithm $\Verify(\pi, \PK)$ is not written out, and equation~(3) as stated
+% contains the witness $\sk$ (via $h^{\sk}$), which a verifier cannot compute. Specify $\Verify$ explicitly:
+% parse $\pi = (C_0, C_1, z)$, recompute $c' = \HashSchnorrR(C_0, C_1, \PK, \gamma)$, and accept iff
+% eq.~(2) $g^z = C_0 \cdot \PK^{c'}$ holds together with a \emph{verifier-computable} second equation using only
+% public group elements (e.g.\ the Chaum--Pedersen equal-discrete-log check on $(g, C_0)$ and
+% $(h, C_1 \cdot \PK^{-1})$).}
 
 \begin{enumerate}
 \setcounter{enumi}{3}
