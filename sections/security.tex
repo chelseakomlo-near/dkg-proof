@@ -120,15 +120,20 @@ C_{\simid}[0] \gets \dkgchal \cdot
           zero-knowledge simulator of $\mathcal{R}_P$ (Figure~\ref{fg:concrete-simulator}),
           reprogramming the random oracle $\HashSchnorrR$:
           \begin{enumerate}
-            \item Sample a challenge $c' \rgets \Zq$ and a response $z \rgets \Zq$ uniformly and
+            \item Sample $r \rgets \Zq$ and form a genuine encryption of $g^{\sk} = \PK_\simid$:
+              set $C_0 \gets g^{r}$ and $C_1 \gets h^{r}\cdot \PK_\simid$. ($\SIM$ knows the group
+              element $\PK_\simid$, though not the scalar $\sk$.)
+            \item Sample a challenge $c' \rgets \Zq$ and responses $z_1, z_2 \rgets \Zq$ uniformly and
               independently at random.
-            \item Set $C_0 \gets g^{z} \cdot \PK_\simid^{-c'}$, so that verification equation~(2),
-              $g^z = C_0 \cdot \PK_\simid^{c'}$, holds.
-            \item Using the trapdoor $\eta = \log_g h$ from the setup, compute $h^{\sk} = \PK_\simid^{\eta}$
-              and set $C_1 \gets h^{z} \cdot \PK_\simid^{\,1 - \eta c'}$, so that equation~(3),
-              $h^z = (C_1 \cdot \PK_\simid^{-1}) \cdot (h^{\sk})^{c'}$, holds.
-            \item Reprogram the random oracle so that $\HashSchnorrR(C_0, C_1, \PK_\simid, \gamma_\simid) \gets c'$,
-              and set $\pi_\simid \gets (c = (C_0, C_1), z)$.
+            \item Compute the commitments forced by the verification equations:
+              \[
+                T_1 \gets g^{z_1}\cdot \PK_\simid^{-c'}, \qquad
+                T_2 \gets g^{z_2}\cdot C_0^{-c'}, \qquad
+                T_3 \gets h^{z_2}\cdot g^{z_1}\cdot C_1^{-c'}.
+              \]
+            \item Reprogram the random oracle so that
+              $\HashSchnorrR(g, h, \PK_\simid, C_0, C_1, T_1, T_2, T_3, \gamma_\simid) \gets c'$,
+              and set $\pi_\simid \gets (C_0, C_1, T_1, T_2, T_3, z_1, z_2)$.
           \end{enumerate}
         \item When the adversary queries party $k \in \honest$, output $(C_k, \pi_k)$.
       \end{enumerate}
@@ -137,12 +142,13 @@ C_{\simid}[0] \gets \dkgchal \cdot
     \medskip
 
     \paragraph{\bf Bad event: reprogramming failure.}
-    The last step above reprograms $\HashSchnorrR$ at the point $(C_0, C_1, \PK_\simid, \gamma_\simid)$.
+    The last step above reprograms $\HashSchnorrR$ at the point
+    $(g, h, \PK_\simid, C_0, C_1, T_1, T_2, T_3, \gamma_\simid)$.
     This is sound only if $\adv$ has not already queried $\HashSchnorrR$ at that point; otherwise $\SIM$
     would be forced to assign two distinct outputs to the same input, an inconsistency detectable by
-    $\adv$, and $\SIM$ aborts. Since $C_0 = g^{z} \cdot \PK_\simid^{-c'}$ is uniformly distributed in
-    $\Gr$ (the response $z \rgets \Zq$ is fresh and independent of the adversary's view prior to the
-    proof), the reprogramming point is unpredictable to $\adv$. Letting $q_h$ bound the number of
+    $\adv$, and $\SIM$ aborts. Since $C_0 = g^{r}$ with $r \rgets \Zq$ fresh and independent of the
+    adversary's view prior to the proof, it is uniformly distributed in $\Gr$, so the reprogramming
+    point is unpredictable to $\adv$. Letting $q_h$ bound the number of
     queries $\adv$ makes to $\HashSchnorrR$, the probability of this collision is at most
     $q_h / \lvert \Gr \rvert = q_h / q$, which is negligible in $\lambda$. Conditioned on the collision
     not occurring, the simulated proof $\pi_\simid$ is distributed identically to one produced by an
@@ -163,7 +169,7 @@ C_{\simid}[0] \gets \dkgchal \cdot
       \item When the adversary queries party $k \in \honest\setminus\{\simid\}$, output $f_k(j)$ extracted from the honest participant.
         \item Otherwise, for each corrupt party $j \in \corrupt$, extract its committed contribution by
           decrypting the verifiable-encryption ciphertext $c_j = (C_{j,0}, C_{j,1})$ contained in $\pi_j$
-          using the trapdoor $\eta = \log_g h$: compute $g^{f_j(0)} \gets C_{j,1} \cdot C_{j,0}^{-\eta}$,
+          using the trapdoor $\eta$ (where $h = g^{\eta}$): compute $g^{f_j(0)} \gets C_{j,1} \cdot C_{j,0}^{-\eta}$,
           from which $f_j(0)$ is determined. This extraction is straight-line (no rewinding), as required in the UC setting.
 %           \simon{TODO: decryption recovers the group element $g^{f_j(0)}$, not the scalar $f_j(0)$ (recovering
 %           the scalar is discrete log). Clarify what $\SIM$ actually needs: if only group elements, rewrite the

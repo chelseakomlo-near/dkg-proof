@@ -254,70 +254,39 @@ Figure~\ref{fg:concrete-simulator}.
     \begin{center}
 
 \begin{itemize}
-\item \textbf{Setup:} Accepts as input public parameters $\mathsf{par}$, and a timeout constant $\delta$.
+\item \textbf{Setup:} On input the security parameter $1^\lambda$:
 \begin{enumerate}
-    \item Initialize $Q_K^{(1)} \leftarrow \emptyset$, $Q_K^{(2)} \leftarrow \emptyset$.
-    \item Generate public parameters $(E(\mathbb{F}_p), p, G, q, g) \leftarrow \mathsf{GroupGen}(1^\lambda)$.
-    \item Sample $h \leftarrow_{\$} G$.
-    \item Set $\mathsf{par} \leftarrow (E(\mathbb{F}_p), p, G, q, g, h)$.
+    \item Generate $(E(\mathbb{F}_p), p, G, q, g) \leftarrow \mathsf{GroupGen}(1^\lambda)$.
+    \item Sample $h \leftarrow_{\$} G$ and output $\mathsf{par} \leftarrow (E(\mathbb{F}_p), p, G, q, g, h)$.
+\end{enumerate}
+An honest setup discards the trapdoor $\eta$ with $h = g^{\eta}$; the simulator instead samples
+$h = g^{\eta}$ and keeps $\eta$ to enable online extraction.
+
+\item $\Prove\big((g, h, \PK), (\sk, r)\big)$, on statement $\PK = g^{\sk}$ with proof context $\gamma$:
+\begin{enumerate}
+    \item Form the ciphertext $C_0 \gets g^{r}$, $C_1 \gets h^{r}\cdot g^{\sk}$.
+    \item Sample $a, b \leftarrow_{\$} \Zq$ and set $T_1 \gets g^{a}$, $T_2 \gets g^{b}$, $T_3 \gets h^{b}\cdot g^{a}$.
+    \item Compute $c' \gets \HashSchnorrR(g, h, \PK, C_0, C_1, T_1, T_2, T_3, \gamma)$.
+    \item Set $z_1 \gets a + c'\sk$ and $z_2 \gets b + c' r$.
+    \item Output $\pi \gets (C_0, C_1, T_1, T_2, T_3, z_1, z_2)$.
 \end{enumerate}
 
-\item \textbf{KeyGen:} If $Q_K^{(1)}[i] \neq \bot$, return $\bot$.
-Else, sample $\mathsf{sk} \leftarrow_{\$} \Zq$, set $\mathsf{PK} \leftarrow g^{\mathsf{sk}}$.
-Set $Q_K^{(1)}[i] = \mathsf{PK}$. Output $(\mathsf{PK}, \mathsf{sk})$.
-
-\item \textbf{Register:} Accepts as input public key $\mathsf{PK}$, identifier $i'$ from party $i$, and proof $\pi$.
+\item $\Verify\big(\pi, (g, h, \PK), \gamma\big)$:
 \begin{enumerate}
-    \item Output $\bot$ if $i' \neq i$.
-    \item Output $\bot$ if $Q_K^{(2)}[i] \neq \bot$.
-    \item Output $\bot$ if $\mathsf{Verify}(\pi, \mathsf{PK}) \neq 1$, where $\pi$ proves the relation $\mathcal{R}_P$, as follows:
+    \item Parse $\pi = (C_0, C_1, T_1, T_2, T_3, z_1, z_2)$.
+    \item Recompute $c' \gets \HashSchnorrR(g, h, \PK, C_0, C_1, T_1, T_2, T_3, \gamma)$.
+    \item Accept iff all three equations hold:
+    \[
+      g^{z_1} = T_1 \cdot \PK^{c'}, \qquad
+      g^{z_2} = T_2 \cdot C_0^{c'}, \qquad
+      h^{z_2}\cdot g^{z_1} = T_3 \cdot C_1^{c'}.
+    \]
 \end{enumerate}
-
-\[
-\mathcal{R}_P =
-\left\{
-\big( g, h, \mathsf{PK}, c = (C_0, C_1), z \big) ; (\mathsf{sk}, r)
-\right\}
-\quad \text{iff}
-\]
-
-
-\begin{align*}
-(1)\quad & C_0 = g^r; \quad C_1 = h^r \cdot g^{\mathsf{sk}} \\
-(2)\quad & g^z = C_0 \cdot \PK^{c'} \\
-(3)\quad & h^z = (C_1 \cdot \PK^{-1}) \cdot (h^{\mathsf{sk}})^{c'}
-\end{align*}
-
-Here the witness is $(\sk, r)$; the statement comprises the generator $g$, the setup element $h \rgets \Gr$,
-the public key $\PK = g^{\sk}$, the ElGamal ciphertext $c = (C_0, C_1)$, and the response $z$.
-Equation~(1) is the verifiable-encryption component enabling online extraction (decrypt $c$ with the
-setup trapdoor $\eta = \log_g h$). The Schnorr commitments are not sent separately but reused from the
-ciphertext, $R_g \coloneqq C_0$ and $R_h \coloneqq C_1 \cdot \PK^{-1}$, binding the ciphertext to the statement.
-The challenge $c'$ is not part of the proof: the verifier recomputes it directly via Fiat--Shamir as
-\[
-  c' = \HashSchnorrR(C_0, C_1, \PK, \gamma),
-\]
-binding the ciphertext $(C_0, C_1)$, the statement $\PK$, and the proof context $\gamma$; the honest prover
-sends the single response $z = r + c' \cdot \sk$.
-
-\simon{TODO: the verification algorithm $\Verify(\pi, \PK)$ is not written out, and equation~(3) as stated
-contains the witness $\sk$ (via $h^{\sk}$), which a verifier cannot compute. Specify $\Verify$ explicitly:
-parse $\pi = (C_0, C_1, z)$, recompute $c' = \HashSchnorrR(C_0, C_1, \PK, \gamma)$, and accept iff
-eq.~(2) $g^z = C_0 \cdot \PK^{c'}$ holds together with a \emph{verifier-computable} second equation using only
-public group elements (e.g.\ the Chaum--Pedersen equal-discrete-log check on $(g, C_0)$ and
-$(h, C_1 \cdot \PK^{-1})$).}
-
-\begin{enumerate}
-\setcounter{enumi}{3}
-    \item Else, set $Q_K^{(2)}[i] = \mathsf{PK}$.
-\end{enumerate}
-
-\item \textbf{Query:} Wait $\delta$ amount of time (where $\delta$ is the constant defined above), to give all parties enough time to complete registration. Then, output $Q_K^{(2)}$.
 \end{itemize}
 
     \end{center}
   \end{framed}
-    \caption{Concrete protocol realizing $\mathcal{F}^{\pk}_{zk}$.
-    }
+    \caption{Concrete online-extractable NIZK instantiating $\NIZKUCExtractable$ for the
+    relation $\mathcal{R}_P$.}
   \label{fg:concrete-simulator}
 \end{figure}
