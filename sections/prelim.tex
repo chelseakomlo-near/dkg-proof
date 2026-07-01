@@ -208,41 +208,46 @@ concretely in Figure~\ref{fg:concrete-simulator}. A construction in the style
 of~\cite{BCK25} follows.
 
 The relation $\mathcal{R}_P$ certifies that an ElGamal ciphertext $c=(C_0,C_1)$
-correctly encrypts $g^{\sk}$ together with knowledge of the discrete logarithm
-$\sk = \log_g \PK$. The verifiable-encryption component is what makes the proof
+correctly encrypts $g^{\sk}$ together with knowledge of the exponent $\sk$
+satisfying $\PK = g^{\sk}$. The verifiable-encryption component is what makes the proof
 online-extractable: the simulator samples the setup element $h = g^{\eta}$, keeps
 the trapdoor $\eta$, and decrypts $c$ to recover $g^{\sk}$ without rewinding.
 
-$$
-  \mathcal{R}_P = \left\{ \left(g, h, \PK, c = (C_0, C_1), z \right) ; (\mathsf{sk}, r) \right\} \quad \text{iff}\\
-$$
-\begin{align*}
-  &(1) \quad C_0 = g^r; \quad C_1 = h^r \cdot g^{\mathsf{sk}} \\
-  &(2) \quad g^z = C_0 \cdot \PK^{c'} \\
-  &(3) \quad h^z = \left(C_1 \cdot \PK^{-1}\right) \cdot \left(h^{\mathsf{sk}}\right)^{c'}
-\end{align*}
-
-The elements of the relation are as follows.
-The witness is the pair $(\sk, r)$, where $\sk$ is the secret key and $r$ the encryption randomness.
-The statement consists of the generator $g$ of $\Gr$, the random group element $h \rgets \Gr$ fixed at setup,
-the public key $\PK = g^{\sk}$, the ElGamal ciphertext $c = (C_0, C_1)$ of $g^{\sk}$ under randomness $r$, and the response $z$.
-Equation~(1) is the verifiable-encryption component that makes the proof online-extractable:
-the simulator samples $h = g^{\eta}$ at setup, keeps the trapdoor $\eta$, and decrypts $c$ to recover the witness without rewinding.
-Rather than transmit fresh Schnorr commitments, we reuse the encryption randomness $r$ as the proof nonce, so the
-commitments are read off the ciphertext, namely $R_g \coloneqq C_0$ and $R_h \coloneqq C_1 \cdot \PK^{-1} = h^r$;
-this binds the ciphertext to the proven statement and removes two redundant group elements.
-The challenge $c'$ is \emph{not} provided by the prover: following the Fiat--Shamir transform,
-the verifier derives it directly as
 \[
-  c' = \HashSchnorrR(C_0, C_1, \PK, \gamma),
+  \mathcal{R}_P = \Big\{\, \big(g, h, \PK, C_0, C_1\big) ; (\mathsf{sk}, r) \ :\
+    \PK = g^{\sk} \ \wedge\ C_0 = g^{r} \ \wedge\ C_1 = h^{r}\cdot g^{\sk} \,\Big\}.
 \]
-where the hash binds the ciphertext $(C_0, C_1)$, the statement $\PK$, and the proof context $\gamma$
-(e.g.\@ $\gamma = (\sid, k, C_k[0])$ in the protocol).
-The honest prover then sets the single response $z = r + c' \cdot \sk$, which simultaneously opens the discrete
-logarithm of $\PK$ and certifies that $c$ encrypts $g^{\sk}$.
 
-A practical construction is given in Figure~\ref{fg:concrete-simulator},
-where the proof $\pi$ is practically implemented using Schnorr proofs.
+The witness is the pair $(\sk, r)$; the statement consists of the generator $g$ of $\Gr$, the setup element
+$h = g^{\eta} \rgets \Gr$, the public key $\PK$, and the ElGamal ciphertext $c = (C_0, C_1)$ of $g^{\sk}$ under
+randomness $r$. Extraction uses the third conjunct: knowing the trapdoor $\eta$ (where $h = g^{\eta}$), the
+simulator recovers $g^{\sk} = C_1 \cdot C_0^{-\eta}$ without rewinding.
+
+Because the statement binds two independent witnesses, $\sk$ and $r$, the proof is a generalized Schnorr
+(AND) proof with \emph{two} responses; a single response cannot open both. The prover samples nonces
+$a, b \rgets \Zq$ and forms the commitments
+\[
+  T_1 = g^{a}, \qquad T_2 = g^{b}, \qquad T_3 = h^{b}\cdot g^{a}.
+\]
+Following the Fiat--Shamir transform, the challenge is derived as
+\[
+  c' = \HashSchnorrR(g, h, \PK, C_0, C_1, T_1, T_2, T_3, \gamma),
+\]
+where $\gamma$ is the proof context (e.g.\@ $\gamma = (\sid, k, C_k[0])$ in the protocol), and the prover
+sends the two responses $z_1 = a + c'\sk$ and $z_2 = b + c' r$. The verifier accepts iff
+\begin{align*}
+  (1)\quad & g^{z_1} = T_1 \cdot \PK^{c'} \\
+  (2)\quad & g^{z_2} = T_2 \cdot C_0^{c'} \\
+  (3)\quad & h^{z_2}\cdot g^{z_1} = T_3 \cdot C_1^{c'}
+\end{align*}
+Equation~(1) is a Schnorr proof of knowledge of the exponent $\sk$ with $\PK = g^{\sk}$, while equations~(2)--(3) certify that
+$(C_0, C_1)$ encrypts $g^{\sk}$ under the same $\sk$ and randomness $r$.
+
+The three commitments need not be transmitted: it suffices to send $\pi = (c', z_1, z_2)$, since the verifier
+recomputes $T_1 = g^{z_1}\PK^{-c'}$, $T_2 = g^{z_2}C_0^{-c'}$, and $T_3 = h^{z_2}g^{z_1}C_1^{-c'}$ and
+re-derives $c'$ from the hash. The proof is then three scalars beyond the ciphertext $(C_0, C_1)$, which is
+transmitted anyway for extraction. The $\Prove$ and $\Verify$ algorithms are detailed in
+Figure~\ref{fg:concrete-simulator}.
 
 \begin{figure}[H]
   \begin{framed}
@@ -295,12 +300,12 @@ The challenge $c'$ is not part of the proof: the verifier recomputes it directly
 binding the ciphertext $(C_0, C_1)$, the statement $\PK$, and the proof context $\gamma$; the honest prover
 sends the single response $z = r + c' \cdot \sk$.
 
-% \simon{TODO: the verification algorithm $\Verify(\pi, \PK)$ is not written out, and equation~(3) as stated
-% contains the witness $\sk$ (via $h^{\sk}$), which a verifier cannot compute. Specify $\Verify$ explicitly:
-% parse $\pi = (C_0, C_1, z)$, recompute $c' = \HashSchnorrR(C_0, C_1, \PK, \gamma)$, and accept iff
-% eq.~(2) $g^z = C_0 \cdot \PK^{c'}$ holds together with a \emph{verifier-computable} second equation using only
-% public group elements (e.g.\ the Chaum--Pedersen equal-discrete-log check on $(g, C_0)$ and
-% $(h, C_1 \cdot \PK^{-1})$).}
+\simon{TODO: the verification algorithm $\Verify(\pi, \PK)$ is not written out, and equation~(3) as stated
+contains the witness $\sk$ (via $h^{\sk}$), which a verifier cannot compute. Specify $\Verify$ explicitly:
+parse $\pi = (C_0, C_1, z)$, recompute $c' = \HashSchnorrR(C_0, C_1, \PK, \gamma)$, and accept iff
+eq.~(2) $g^z = C_0 \cdot \PK^{c'}$ holds together with a \emph{verifier-computable} second equation using only
+public group elements (e.g.\ the Chaum--Pedersen equal-discrete-log check on $(g, C_0)$ and
+$(h, C_1 \cdot \PK^{-1})$).}
 
 \begin{enumerate}
 \setcounter{enumi}{3}
