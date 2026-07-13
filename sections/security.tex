@@ -102,13 +102,12 @@ C_{\simid}[0] \gets \dkgchal \cdot
           \[ C_\simid[\ell] \gets C_\simid[0]^{\lambda'_{0,\ell}} \cdot
             \prod_{j \in \corrupt } (g^{\share_{\simid,j}})^{\lambda'_{j,\ell}} \]
         where $\lambda'_{0,\ell}$ and $\lambda'_{j,\ell}$ denote the coefficient of $x^\ell$ in the Lagrange basis
-        polynomials $L'_0$ and $L'_j$ for the node set $\{ 0\}\cup\corrupt$ (See Section~\ref{prelim:secret-sharing}).
+        polynomials $L'_0$ and $L'_j$ for the node set $\{ 0\}\cup\corrupt$ (See Section~\ref{prelim:secret-sharing}).%
+        \footnote{We take the worst case $\lvert\corrupt\rvert = \tcor$, so that $\{0\}\cup\corrupt$ has $t$
+        points and pins down $f_\simid$ uniquely; if fewer parties are corrupt, the node set is padded with
+        arbitrary honest indices carrying freshly sampled shares.}
         This makes $C_\simid[\ell] = g^{a_\ell}$ a commitment to the $\ell$-th \emph{coefficient} $a_\ell$ of $f_\simid$,
         as required by the protocol's commitment vectors and the Round~4 check $g^{f_i(k)} = \prod_{\ell} C_i[\ell]^{k^\ell}$.
-%         \simon{TODO: the node set $\{0\}\cup\corrupt$ determines a degree-$\tcor$ polynomial uniquely only when
-%         $\lvert\{0\}\cup\corrupt\rvert = t$, i.e.\ $\lvert\corrupt\rvert = \tcor$. State this
-%         worst-case-corruption assumption, and for $\lvert\corrupt\rvert < \tcor$ specify how the interpolation
-%         set is completed (e.g.\ pad with random shares on honest indices).}
         \item Produce a simulated proof $\pi_\simid$ for the statement $\PK_\simid \coloneqq C_\simid[0]$
           with context $\gamma_\simid \gets (\sid, \simid, C_\simid[0])$.
           Since $C_\simid[0]$ is defined in Equation~\eqref{eq:simid-comm} so as to embed the challenge
