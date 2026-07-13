@@ -131,6 +131,8 @@ C_{\simid}[0] \gets \dkgchal \cdot
               $\HashSchnorrR(g, h, \PK_\simid, C_0, C_1, T_1, T_2, T_3, \gamma_\simid) \gets c'$,
               and set $\pi_\simid \gets (C_0, C_1, T_1, T_2, T_3, z_1, z_2)$.
           \end{enumerate}
+        \item Reprogram the commitment random oracle so for every $i \in \honest$,
+          $\HashCom(\sid, i, C_i) \gets h_i$.
         \item When the adversary queries party $k \in \honest$, output $(C_k, \pi_k)$.
       \end{enumerate}
     \end{itemize}
@@ -138,23 +140,15 @@ C_{\simid}[0] \gets \dkgchal \cdot
     \medskip
 
     \paragraph{\bf Bad event: reprogramming failure.}
-    The last step above reprograms $\HashSchnorrR$ at the point
-    $(g, h, \PK_\simid, C_0, C_1, T_1, T_2, T_3, \gamma_\simid)$.
-    This is sound only if $\adv$ has not already queried $\HashSchnorrR$ at that point; otherwise $\SIM$
-    would be forced to assign two distinct outputs to the same input, an inconsistency detectable by
-    $\adv$, and $\SIM$ aborts. Since $C_0 = g^{r}$ with $r \rgets \Zq$ fresh and independent of the
-    adversary's view prior to the proof, it is uniformly distributed in $\Gr$, so the reprogramming
-    point is unpredictable to $\adv$. Letting $q_h$ bound the number of
-    queries $\adv$ makes to $\HashSchnorrR$, the probability of this collision is at most
-    $q_h / \lvert \Gr \rvert = q_h / q$, which is negligible in $\lambda$. Conditioned on the collision
-    not occurring, the simulated proof $\pi_\simid$ is distributed identically to one produced by an
-    honest prover, so the adversary's view in this hybrid is statistically indistinguishable
-    (within $q_h/q$) from its view in the real protocol.
-
-%     \simon{TODO: an analogous reprogramming of $\HashCom$ is also required and currently missing. $\SIM$ fixes
-%     $h_\simid$ in Round~1 but only constructs $C_\simid$ in Round~2, so it must reprogram
-%     $\HashCom(\sid, \simid, C_\simid) \gets h_\simid$ to pass the Round~3 opening check, with its own bad event
-%     (``$\adv$ already queried that point'') bounded by $q_{\HashCom}/q$.}
+    The simulation reprograms two random oracles: $\HashSchnorrR$ at the point
+    $(g, h, \PK_\simid, C_0, C_1, T_1, T_2, T_3, \gamma_\simid)$,
+    and $\HashCom$ at each point $(\sid, i, C_i)$, $i \in \honest$.
+    Every such point is unpredictable to $\adv$ beforehand: $C_0 = g^{r}$ with $r \rgets \Zq$ fresh is
+    uniform in $\Gr$, and the vectors $C_i$ are formed from freshly sampled coefficients (with
+    $C_\simid$ embedding the uniform challenge $\dkgchal$). Let $q_h$ and $q_{\HashCom}$ be the
+    maximum number of queries $\adv$ makes respectively to $\HashSchnorrR$ and $\HashCom$. Using the union bound,
+    we have that the total collision probability is upper bounded by
+    $q_h/q + \lvert\honest\rvert \cdot q_{\HashCom}/q$, negligible in $\lambda$.
 
     \paragraph{\bf Round 3.}
     On input $\KeyGen_3(\{C_i, \pi_i\}_{i\in\set{n}})$,
