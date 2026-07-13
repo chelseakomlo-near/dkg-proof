@@ -112,6 +112,9 @@ these channels are equipped with timeouts.
 We instantiate this reliable broadcast following the book of Cachin, Guerraoui and
 Rodrigues~\cite{CGR11}; concretely, we use their ``Authenticated Double-Echo Broadcast''
 protocol (Algorithm 3.18 of~\cite{CGR11}) to achieve Byzantine reliable broadcast.
+This protocol guarantees the properties above only if the number of corrupt parties satisfies
+$n > 3\,\lvert\corrupt\rvert$; we assume this fault bound holds throughout, and our security
+statements inherit it as an assumption on the network.
 The file \textit{echo\_broadcast.rs} contains the implementation of the reliable broadcast protocol.
 We essentially follow the same algorithm 3.18 of~\cite{CGR11} with three mild differences:
 \begin{enumerate}

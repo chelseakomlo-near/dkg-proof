@@ -6,16 +6,12 @@ We next prove the security of $\pedpopplus$ with respect to the notion of securi
 \label{thm:keygen-pedpopplus}
 Assume $\NIZKUCExtractable$ is a secure online-extractable (straight-line extractable) zero-knowledge
 proof for the relation $\mathcal{R}_P$ of Section~\ref{def:online-extractable}.
-Then, for $t \leq n/2$,
+Then, provided the adversary corrupts at most $\lvert\corrupt\rvert \leq \tcor$ parties
+and the network satisfies the fault bound of the reliable broadcast channel
+(Section~\ref{sec:comm-model}),
 the $\pedpopplus$ DKG is secure under aborts in the programmable random oracle model,
 and realizes the idealized notion $\FDKGAbort$.
 \end{theorem}
-
-% \simon{TODO: the bound $t \leq n/2$ is stated but never used in the proof below. Either replace it with the
-% corruption bound the simulator actually needs, $\lvert\corrupt\rvert \leq \tcor$ (see the Lagrange embedding
-% in Round~2), or, if honest majority is genuinely required by the underlying Byzantine reliable broadcast
-% (Section~\ref{sec:comm-model}), state the $n$--$t$--fault relationship explicitly and reconcile it with the
-% protocol's $t \leq n$ requirement.}
 
 \begin{proof}
     To establish the proof of Theorem~\ref{thm:keygen-pedpopplus},
