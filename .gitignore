@@ -1,1 +1,31 @@
-main.pdf
+# LaTeX build artifacts (everything generated; source .tex/.bib/.sty/.cls are kept)
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.log
+*.lot
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.nav
+*.snm
+*.vrb
+*.idx
+*.ind
+*.ilg
+*.glo
+*.gls
+*.acn
+*.acr
+*.alg
+*.xdy
+main-blx.bib
+
+# Generated PDF
+*.pdf

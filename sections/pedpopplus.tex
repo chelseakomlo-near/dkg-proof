@@ -49,14 +49,12 @@ Checking such invariant is due to the fact that honest new participants shall no
 \centering
 \begin{pchstack}[boxed,center,space=1em]
 \begin{pcvstack}
-\red{
 \procedure{$\KeyGen_0(k, t, n)$}{
-\require n > 2\\
-\require k\in \set{n}\\
-\require t\leq n\\
-\sid_i \rgets \zo^\lambda \\
-\broadcast(\sid_i) \\
-}
+\color{red} \require n > 2\\
+\color{red} \require k\in \set{n}\\
+\color{red} \require t\leq n\\
+\color{red} \sid_i \rgets \zo^\lambda \\
+\color{red} \broadcast(\sid_i) \\
 }
 \procedure{$\KeyGen_1(\sid_1, \ldots, \sid_n)$}{
 \color{red} \sid \gets \HashSid(\sid_1, \ldots, \sid_n) \\
